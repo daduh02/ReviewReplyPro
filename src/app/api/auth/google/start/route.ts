@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
-import { createGoogleOAuthState, getGoogleRedirectUri } from "@/lib/admin-auth";
+import {
+  createGoogleOAuthState,
+  getBaseUrl,
+  getGoogleRedirectUri,
+} from "@/lib/admin-auth";
 
 export async function GET() {
   const clientId = process.env.GOOGLE_CLIENT_ID;
 
   if (!clientId) {
-    return NextResponse.json(
-      {
-        error:
-          "Google OAuth is not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.",
-      },
-      { status: 500 },
+    return NextResponse.redirect(
+      `${await getBaseUrl()}/admin/login?error=configuration`,
     );
   }
 
