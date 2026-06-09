@@ -105,7 +105,7 @@ function createInitialState(): PilotState {
     workspaces: [
       {
         id: workspaceId,
-        name: "Fictional demo workspace",
+        name: "Fictional product testing workspace",
         accountType: "demo",
         plan: "Demo Free",
         billingStatus: "mock_billing",
