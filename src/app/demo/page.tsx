@@ -7,10 +7,10 @@ export default function DemoPage() {
   return (
     <>
       <MarketingNav />
-      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-7xl overflow-hidden px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-4xl font-semibold text-slate-950">Product demo</h1>
+          <div className="min-w-0 max-w-full">
+            <h1 className="text-3xl font-semibold text-slate-950 sm:text-4xl">Product demo</h1>
             <p className="mt-3 max-w-2xl text-lg leading-8 text-slate-600">
               A preview of the Review Inbox using demo Google-style reviews
               from fictional UK local businesses.
