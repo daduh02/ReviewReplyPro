@@ -16,6 +16,10 @@ export type ReplyLength = "Short" | "Standard" | "Detailed";
 
 export type Sentiment = "Positive" | "Negative" | "Complaint";
 
+export type AccountType = "demo" | "pilot" | "customer";
+
+export type BillingStatus = "mock_billing" | "exempt" | "active" | "past_due";
+
 export type BusinessType =
   | "Salon"
   | "Barber"
@@ -76,6 +80,10 @@ export type Review = {
 export type Workspace = {
   id: string;
   name: string;
+  accountType?: AccountType;
+  plan?: "Demo Free" | "Pilot" | "Free for Life" | "Paid";
+  billingStatus?: BillingStatus;
+  active?: boolean;
 };
 
 export type Business = {
@@ -83,6 +91,8 @@ export type Business = {
   workspaceId: string;
   name: string;
   businessType: BusinessType;
+  accountType?: AccountType;
+  active?: boolean;
 };
 
 export type SavedReply = {
@@ -111,13 +121,27 @@ export type GoogleBusinessLocation = {
     | "Demo Google-style reviews"
     | "Google Business Profile connection coming next"
     | "Mock connected for now";
-  plan?: "Demo Free" | "Free for Life";
-  billingStatus?: "mock billing" | "permanently free";
+  plan?: "Demo Free" | "Pilot" | "Free for Life";
+  billingStatus?: "mock billing" | "permanently free" | "exempt";
   pilotStatus?: "demo" | "active";
+  accountType?: AccountType;
+  active?: boolean;
   gbpConnectionStatus?:
     | "demo reviews"
     | "connection coming next"
     | "mock connected for now";
+};
+
+export type CustomerAccount = {
+  id: string;
+  name: string;
+  accountType: AccountType;
+  plan: "Pilot" | "Free for Life" | "Paid";
+  billingStatus: BillingStatus;
+  active: boolean;
+  locations: Array<GoogleBusinessLocation & { businessType: BusinessType; brandVoice: BrandVoiceSettings }>;
+  reviews: Review[];
+  savedReplies: SavedReply[];
 };
 
 export type Plan = {

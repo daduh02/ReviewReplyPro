@@ -17,6 +17,19 @@ enum AdminStatus {
   disabled
 }
 
+enum AccountType {
+  demo
+  pilot
+  customer
+}
+
+enum BillingStatus {
+  mock_billing
+  exempt
+  active
+  past_due
+}
+
 model AdminUser {
   id          String      @id @default(cuid())
   email       String      @unique
@@ -42,6 +55,10 @@ model Workspace {
   name                String
   ownerId             String
   owner               User                @relation(fields: [ownerId], references: [id])
+  accountType         AccountType         @default(demo) @map("account_type")
+  plan                String              @default("Demo Free")
+  billingStatus       BillingStatus       @default(mock_billing) @map("billing_status")
+  active              Boolean             @default(true)
   locations           Location[]
   brandVoiceSettings  BrandVoiceSetting?
   integrations        Integration[]

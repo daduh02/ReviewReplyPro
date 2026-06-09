@@ -93,3 +93,8 @@ All businesses and reviews used in demo mode are fictional examples for product 
 The seed-style demo data includes Example Hair Salon, Example Dental Practice,
 Example Local Garage, Example Indian Restaurant, Example Estate Agents, and
 Example Plumbing Services.
+
+Real pilot/customer accounts are not stored in demo datasets. Ashpazi - Charcoal
+Kitchen, Gardner Champion Solicitors Ltd, and Masjid As-Salaam are maintained as
+protected pilot customer accounts and are excluded from public demo/example
+screens and demo reset flows.

@@ -5,7 +5,7 @@ import type {
   SavedReply,
 } from "@/lib/types";
 
-// Demo examples are fictional for product testing. Real pilot accounts are marked explicitly.
+// All businesses and reviews used in demo mode are fictional examples for product testing.
 export type DemoLocation = GoogleBusinessLocation & {
   businessType: Review["businessType"];
   brandVoice: BrandVoiceSettings;
@@ -183,39 +183,6 @@ export const demoLocations: DemoLocation[] = [
       keepRepliesShortByDefault: true,
     },
   },
-  {
-    id: "masjid_as_salaam_earlsheaton",
-    businessName: "Masjid As-Salaam",
-    businessType: "Mosque / community organisation",
-    location: "Masjid As-Salaam, Earlsheaton",
-    address: "4 New St, Earlsheaton, Dewsbury WF12 8JJ",
-    phone: "07424 239866",
-    googleRating: 4.9,
-    googleReviewCount: 43,
-    status: "Mock connected for now",
-    plan: "Free for Life",
-    billingStatus: "permanently free",
-    pilotStatus: "active",
-    gbpConnectionStatus: "mock connected for now",
-    brandVoice: {
-      businessName: "Masjid As-Salaam",
-      businessType: "Mosque / community organisation",
-      location: "Masjid As-Salaam, Earlsheaton",
-      preferredTone: "Friendly",
-      defaultLength: "Standard",
-      greetingStyle: "Use a respectful, warm greeting",
-      signOffStyle: "With thanks, Masjid As-Salaam",
-      wordsToUse: "community, welcoming, peaceful, helpful, respectful",
-      wordsToAvoid: "corporate, transaction, customer, guaranteed",
-      complaintHandlingStyle:
-        "Acknowledge concerns with care, avoid defensive wording, and invite the reviewer to contact the masjid directly so the matter can be understood properly.",
-      useEmojis: false,
-      mentionBusinessName: true,
-      apologiseForPoorExperiences: true,
-      inviteUnhappyCustomersToContact: true,
-      keepRepliesShortByDefault: false,
-    },
-  },
 ];
 
 export const defaultBrandVoice: BrandVoiceSettings =
@@ -389,75 +356,6 @@ export const demoReviews: Review[] = [
       "Thanks Mark, we really appreciate your review. We are glad the leak was fixed clearly and without fuss. Thanks, the Example Plumbing Services team.",
       "Hi Mark, thank you for choosing Example Plumbing Services. Turning up on time and explaining the issue clearly is exactly what we aim for.",
       "Thank you, Mark. We are pleased we could help with the leak and appreciate you taking the time to leave a review.",
-    ],
-  },
-  {
-    id: "rev_masjid_as_salaam_yusuf",
-    customerName: "Yusuf A",
-    rating: 5,
-    reviewText:
-      "A peaceful and welcoming masjid with a strong sense of community. The facilities are clean and the volunteers are always helpful.",
-    source: "Google",
-    businessName: "Masjid As-Salaam",
-    businessType: "Mosque / community organisation",
-    location: "Masjid As-Salaam, Earlsheaton",
-    address: "4 New St, Earlsheaton, Dewsbury WF12 8JJ",
-    phone: "07424 239866",
-    googleRating: 4.9,
-    googleReviewCount: 43,
-    dateReceived: "2026-06-09",
-    status: "draft_ready",
-    sentiment: "Positive",
-    draftReplies: [
-      "Thank you Yusuf, we really appreciate your kind words. It is lovely to hear that you found the masjid peaceful, welcoming, and well cared for. With thanks, Masjid As-Salaam.",
-      "Dear Yusuf, thank you for taking the time to leave such thoughtful feedback. We are grateful to hear that the community and volunteers made you feel welcome.",
-      "Thank you Yusuf. We are pleased the facilities and volunteer support have been helpful, and we appreciate your duas and support for the masjid.",
-    ],
-  },
-  {
-    id: "rev_masjid_as_salaam_amina",
-    customerName: "Amina H",
-    rating: 4,
-    reviewText:
-      "A very welcoming place for families. It would be helpful to have clearer updates online about class times and community events.",
-    source: "Google",
-    businessName: "Masjid As-Salaam",
-    businessType: "Mosque / community organisation",
-    location: "Masjid As-Salaam, Earlsheaton",
-    address: "4 New St, Earlsheaton, Dewsbury WF12 8JJ",
-    phone: "07424 239866",
-    googleRating: 4.9,
-    googleReviewCount: 43,
-    dateReceived: "2026-06-08",
-    status: "draft_ready",
-    sentiment: "Positive",
-    draftReplies: [
-      "Thank you Amina, we appreciate your kind and helpful feedback. We are glad families feel welcome, and we will keep working on clearer updates for classes and community events. With thanks, Masjid As-Salaam.",
-      "Dear Amina, thank you for sharing this. It is lovely to hear the masjid feels welcoming for families, and your point about clearer online updates is very helpful.",
-      "Thank you Amina. We are grateful for your feedback and will take your suggestion about class and event updates on board.",
-    ],
-  },
-  {
-    id: "rev_masjid_as_salaam_hassan",
-    customerName: "Hassan R",
-    rating: 1,
-    reviewText:
-      "I came for an event but could not find clear information about parking or timings. I felt quite disappointed and unsure who to ask.",
-    source: "Google",
-    businessName: "Masjid As-Salaam",
-    businessType: "Mosque / community organisation",
-    location: "Masjid As-Salaam, Earlsheaton",
-    address: "4 New St, Earlsheaton, Dewsbury WF12 8JJ",
-    phone: "07424 239866",
-    googleRating: 4.9,
-    googleReviewCount: 43,
-    dateReceived: "2026-06-07",
-    status: "new",
-    sentiment: "Complaint",
-    draftReplies: [
-      "Dear Hassan, thank you for letting us know. We are sorry the parking and timing information was not clear and that this affected your visit. Please contact the masjid directly so we can understand what happened and improve this for future events. With thanks, Masjid As-Salaam.",
-      "Thank you Hassan, we are sorry to hear you felt unsure on the day. Clear information matters, especially for community events, and we would welcome the chance to speak with you directly.",
-      "Dear Hassan, we appreciate your feedback and are sorry your visit was disappointing. Please get in touch with the masjid so the team can look into the details properly.",
     ],
   },
 ];

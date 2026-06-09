@@ -19,7 +19,7 @@ export function BillingPanel() {
             Demo Free
           </p>
           <p className="mt-2 text-sm text-slate-600">
-            Demo workspace with active pilot billing records
+            Demo workspace billing preview
           </p>
         </div>
         <div className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
@@ -33,8 +33,8 @@ export function BillingPanel() {
             <p className="font-semibold">Demo billing paused</p>
           </div>
           <p className="mt-3 text-sm leading-6 text-blue-50">
-            Free for Life pilot accounts are permanently free and do not require
-            Stripe checkout.
+            Pilot and paid customer billing records are protected and managed in
+            admin, not in demo reset flows.
           </p>
         </div>
       </section>

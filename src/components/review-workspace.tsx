@@ -135,8 +135,8 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
             </select>
           </label>
           <div className="rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm leading-6 text-blue-950">
-            Demo mode includes fictional UK examples plus active pilot accounts.
-            Pilot billing and Google connection status are shown on location cards.
+            Demo mode includes fictional UK examples only. Pilot and customer
+            accounts are protected from demo resets and managed in admin.
           </div>
         </div>
 
@@ -410,7 +410,7 @@ export function ReviewDetail({ review }: { review?: Review }) {
             <dt className="font-semibold text-slate-950">Pilot access</dt>
             <dd className="mt-1 text-slate-600">
               {location?.pilotStatus === "active"
-                ? "Active pilot · permanently free"
+                ? `Active pilot · ${location.billingStatus}`
                 : "Demo account"}
             </dd>
           </div>

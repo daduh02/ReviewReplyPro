@@ -10,6 +10,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { demoLocations, demoReviews, savedReplies } from "@/lib/demo-data";
+import {
+  customerAccounts,
+  customerLocations,
+  customerReviews,
+  customerSavedReplies,
+} from "@/lib/customer-data";
 import { requireAdmin } from "@/lib/admin-auth";
 
 const controlCards = [
@@ -47,8 +53,11 @@ const controlCards = [
 
 export default async function AdminOverviewPage() {
   const admin = await requireAdmin();
-  const pilotLocations = demoLocations.filter(
-    (location) => location.pilotStatus === "active",
+  const reportingLocations = [...demoLocations, ...customerLocations];
+  const reportingReviews = [...demoReviews, ...customerReviews];
+  const reportingSavedReplies = [...savedReplies, ...customerSavedReplies];
+  const pilotLocations = customerLocations.filter(
+    (location) => location.accountType === "pilot" && location.active,
   );
 
   return (
@@ -57,25 +66,29 @@ export default async function AdminOverviewPage() {
         <div className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
           <p className="text-sm font-medium text-slate-500">Businesses</p>
           <p className="mt-2 text-3xl font-semibold text-slate-950">
-            {new Set(demoLocations.map((location) => location.businessName)).size}
+            {
+              new Set(
+                reportingLocations.map((location) => location.businessName),
+              ).size
+            }
           </p>
         </div>
         <div className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
           <p className="text-sm font-medium text-slate-500">Locations</p>
           <p className="mt-2 text-3xl font-semibold text-slate-950">
-            {demoLocations.length}
+            {reportingLocations.length}
           </p>
         </div>
         <div className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
           <p className="text-sm font-medium text-slate-500">Reviews</p>
           <p className="mt-2 text-3xl font-semibold text-slate-950">
-            {demoReviews.length}
+            {reportingReviews.length}
           </p>
         </div>
         <div className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
           <p className="text-sm font-medium text-slate-500">Saved replies</p>
           <p className="mt-2 text-3xl font-semibold text-slate-950">
-            {savedReplies.length}
+            {reportingSavedReplies.length}
           </p>
         </div>
       </section>
@@ -126,6 +139,68 @@ export default async function AdminOverviewPage() {
 
       <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
         <div className="flex items-center gap-3">
+          <MapPin className="size-5 text-blue-700" />
+          <h2 className="text-2xl font-semibold text-slate-950">
+            Customer accounts
+          </h2>
+        </div>
+        <div className="mt-5 grid gap-4 lg:grid-cols-3">
+          {customerAccounts.map((account) => (
+            <article
+              key={account.id}
+              className="rounded-lg border border-slate-200 p-4"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h3 className="font-semibold text-slate-950">{account.name}</h3>
+                  <p className="mt-1 text-sm capitalize text-slate-600">
+                    {account.accountType === "customer"
+                      ? "Paid Customer"
+                      : "Pilot Customer"}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 ring-1 ring-blue-100">
+                    {account.accountType === "customer"
+                      ? "Paid Customer"
+                      : "Pilot Customer"}
+                  </span>
+                  {account.plan === "Free for Life" ? (
+                    <span className="rounded-full bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white">
+                      Free for Life
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+              <dl className="mt-4 grid gap-2 text-sm">
+                <div className="flex justify-between gap-3">
+                  <dt className="font-semibold text-slate-950">Plan</dt>
+                  <dd className="text-slate-600">{account.plan}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="font-semibold text-slate-950">Billing</dt>
+                  <dd className="text-slate-600">{account.billingStatus}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="font-semibold text-slate-950">Locations</dt>
+                  <dd className="text-slate-600">{account.locations.length}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="font-semibold text-slate-950">Reviews</dt>
+                  <dd className="text-slate-600">{account.reviews.length}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="font-semibold text-slate-950">Resettable</dt>
+                  <dd className="text-slate-600">No</dd>
+                </div>
+              </dl>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
+        <div className="flex items-center gap-3">
           <MapPin className="size-5 text-emerald-600" />
           <h2 className="text-2xl font-semibold text-slate-950">
             Active pilot locations
@@ -151,6 +226,9 @@ export default async function AdminOverviewPage() {
                     Free for Life
                   </span>
                 ) : null}
+                <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 ring-1 ring-blue-100">
+                  Pilot Customer
+                </span>
               </div>
               <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
                 <div>
