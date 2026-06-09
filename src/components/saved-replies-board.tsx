@@ -2,17 +2,18 @@
 
 import { Archive, Copy, Edit3, Search } from "lucide-react";
 import { useMemo, useState } from "react";
-import { savedReplies } from "@/lib/demo-data";
+import { usePilotStore } from "@/lib/pilot-store";
 
 const filters = ["All", "Positive", "Negative", "Complaints", "5-Star"];
 
 export function SavedRepliesBoard() {
+  const store = usePilotStore();
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("All");
 
   const replies = useMemo(
     () =>
-      savedReplies.filter((reply) => {
+      store.savedReplies.filter((reply) => {
         const matchesSearch =
           reply.replyPreview.toLowerCase().includes(query.toLowerCase()) ||
           reply.originalReviewSnippet.toLowerCase().includes(query.toLowerCase());
@@ -27,7 +28,7 @@ export function SavedRepliesBoard() {
             ));
         return matchesSearch && matchesFilter;
       }),
-    [filter, query],
+    [filter, query, store.savedReplies],
   );
 
   return (
@@ -91,6 +92,11 @@ export function SavedRepliesBoard() {
               {[Copy, Edit3, Archive].map((Icon, index) => (
                 <button
                   key={index}
+                  onClick={() => {
+                    if (Icon === Copy) {
+                      navigator.clipboard?.writeText(reply.replyPreview);
+                    }
+                  }}
                   className="inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 text-slate-700 hover:border-blue-200 hover:text-blue-700"
                 >
                   <Icon className="size-4" />

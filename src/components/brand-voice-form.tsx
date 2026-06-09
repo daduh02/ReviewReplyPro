@@ -1,19 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import { defaultBrandVoice, demoLocations } from "@/lib/demo-data";
+import { defaultBrandVoice } from "@/lib/demo-data";
+import { usePilotStore } from "@/lib/pilot-store";
 import type { BrandVoiceSettings, ReplyLength, Tone } from "@/lib/types";
 
 export function BrandVoiceForm() {
+  const store = usePilotStore();
+  const locations = store.locations;
+  const firstLocation = locations[0];
   const [settings, setSettings] =
     useState<BrandVoiceSettings>(defaultBrandVoice);
-  const [selectedLocation, setSelectedLocation] = useState(demoLocations[0].id);
+  const [selectedLocation, setSelectedLocation] = useState(firstLocation?.id ?? "");
 
   function update<K extends keyof BrandVoiceSettings>(
     key: K,
     value: BrandVoiceSettings[K],
   ) {
-    setSettings((current) => ({ ...current, [key]: value }));
+    setSettings((current) => {
+      const next = { ...current, [key]: value };
+      if (selectedLocation) {
+        store.updateBrandVoice(selectedLocation, next);
+      }
+      return next;
+    });
   }
 
   return (
@@ -29,17 +39,17 @@ export function BrandVoiceForm() {
           <select
             value={selectedLocation}
             onChange={(event) => {
-              const next = demoLocations.find(
+              const next = locations.find(
                 (location) => location.id === event.target.value,
               );
               setSelectedLocation(event.target.value);
               if (next) {
-                setSettings(next.brandVoice);
+                setSettings(store.brandVoices[next.id] ?? next.brandVoice);
               }
             }}
             className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2"
           >
-            {demoLocations.map((location) => (
+            {locations.map((location) => (
               <option key={location.id} value={location.id}>
                 {location.businessName} — {location.location}
               </option>

@@ -2,7 +2,7 @@
 
 ReviewReply Pro is a UK-focused SaaS MVP for local businesses that want professional, on-brand draft replies for Google and customer reviews.
 
-The product is centred on a Review Inbox, not a basic paste-review prompt. Mock Google Business Profile reviews are imported into the inbox, 3 draft reply options are prepared, and the user can edit, copy, save, mark as posted, or archive each review.
+The product is centred on a Review Inbox, not a basic paste-review prompt. Demo Google-style reviews are available in the inbox, manual review entry is active now, 3 draft reply options can be prepared, and the user can edit, copy, save, mark as posted, or archive each review.
 
 ## Stack
 
@@ -25,7 +25,9 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-The app runs without real Google, Stripe, OpenAI, or database credentials. Demo data is loaded from local TypeScript modules.
+The app runs without real Google, Stripe, OpenAI, or database credentials. Demo data is loaded from local TypeScript modules, then pilot workflow changes persist in browser localStorage.
+
+Set `OPENAI_API_KEY` in `.env.local` to generate reply options with OpenAI. Without it, the app uses local mock replies so the workflow still runs.
 
 ## Useful commands
 
@@ -35,9 +37,9 @@ npm run typecheck
 npm run build
 ```
 
-## Mock providers
+## Demo providers
 
-- `MockGoogleReviewsProvider` returns UK business locations and review examples.
+- Demo Google-style reviews use fictional UK-style business locations and review examples.
 - `MockAIReplyProvider` generates British English reply variants locally.
 - Stripe checkout and webhooks return local-safe placeholder responses unless Stripe env vars are set.
 

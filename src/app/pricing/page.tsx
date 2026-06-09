@@ -9,8 +9,8 @@ export default function PricingPage() {
       <main className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <h1 className="text-4xl font-semibold text-slate-950">Simple UK pricing</h1>
         <p className="mt-4 max-w-2xl text-lg leading-8 text-slate-600">
-          Start manually, then upgrade when the Review Inbox and mock Google sync
-          become part of your weekly workflow.
+          Start with manual review entry now, then upgrade when Google Business
+          Profile connection becomes part of your weekly workflow.
         </p>
         <div className="mt-8 grid gap-5 lg:grid-cols-3">
           {plans.map((plan) => (

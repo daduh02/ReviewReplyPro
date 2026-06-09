@@ -46,8 +46,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             Pro demo workspace
           </div>
           <p className="mt-2 text-sm leading-6 text-blue-900/75">
-            Mock Google sync is active for fictional example businesses across
-            UK-style demo locations.
+            Demo Google-style reviews are available for fictional example
+            businesses. Manual review entry is active now.
           </p>
         </div>
         <nav className="mt-6 space-y-1">
@@ -71,7 +71,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">
-                Mock authenticated app
+                Functional demo workspace
               </p>
               <h1 className="text-lg font-semibold text-slate-950">
                 Review inbox with draft replies ready

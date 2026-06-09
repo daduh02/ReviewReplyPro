@@ -1,10 +1,10 @@
 export type ReviewStatus =
-  | "New"
-  | "Draft ready"
-  | "Edited"
-  | "Copied"
-  | "Posted"
-  | "Archived";
+  | "new"
+  | "draft_ready"
+  | "edited"
+  | "copied"
+  | "posted"
+  | "archived";
 
 export type Tone =
   | "Friendly"
@@ -67,6 +67,21 @@ export type Review = {
   status: ReviewStatus;
   sentiment: Sentiment;
   draftReplies: string[];
+  selectedReplyIndex?: number;
+  selectedReply?: string;
+  editedReply?: string;
+};
+
+export type Workspace = {
+  id: string;
+  name: string;
+};
+
+export type Business = {
+  id: string;
+  workspaceId: string;
+  name: string;
+  businessType: BusinessType;
 };
 
 export type SavedReply = {
@@ -91,7 +106,7 @@ export type GoogleBusinessLocation = {
   googleRating?: number;
   googleReviewCount?: number;
   priceRange?: string;
-  status: "Connected" | "Sync paused";
+  status: "Demo Google-style reviews" | "Google Business Profile connection coming next";
 };
 
 export type Plan = {

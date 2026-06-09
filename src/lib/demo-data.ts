@@ -21,7 +21,7 @@ export const demoLocations: DemoLocation[] = [
     googleRating: 4.8,
     googleReviewCount: 124,
     priceRange: "£20-50",
-    status: "Connected",
+    status: "Demo Google-style reviews",
     brandVoice: {
       businessName: "Example Hair Salon",
       businessType: "Salon",
@@ -49,7 +49,7 @@ export const demoLocations: DemoLocation[] = [
     address: "Example Road, Manchester",
     googleRating: 4.5,
     googleReviewCount: 89,
-    status: "Connected",
+    status: "Demo Google-style reviews",
     brandVoice: {
       businessName: "Example Dental Practice",
       businessType: "Dentist",
@@ -78,7 +78,7 @@ export const demoLocations: DemoLocation[] = [
     googleRating: 4.7,
     googleReviewCount: 156,
     priceRange: "£50-150",
-    status: "Connected",
+    status: "Demo Google-style reviews",
     brandVoice: {
       businessName: "Example Local Garage",
       businessType: "Garage",
@@ -107,7 +107,7 @@ export const demoLocations: DemoLocation[] = [
     googleRating: 4.4,
     googleReviewCount: 211,
     priceRange: "£10-20",
-    status: "Connected",
+    status: "Demo Google-style reviews",
     brandVoice: {
       businessName: "Example Indian Restaurant",
       businessType: "Restaurant",
@@ -135,7 +135,7 @@ export const demoLocations: DemoLocation[] = [
     address: "Example Market Street, Leicester",
     googleRating: 4.6,
     googleReviewCount: 73,
-    status: "Connected",
+    status: "Demo Google-style reviews",
     brandVoice: {
       businessName: "Example Estate Agents",
       businessType: "Estate agent",
@@ -163,7 +163,7 @@ export const demoLocations: DemoLocation[] = [
     address: "Example Business Park, Manchester",
     googleRating: 4.9,
     googleReviewCount: 98,
-    status: "Connected",
+    status: "Demo Google-style reviews",
     brandVoice: {
       businessName: "Example Plumbing Services",
       businessType: "Trade",
@@ -230,7 +230,7 @@ export const demoReviews: Review[] = [
     googleReviewCount: 124,
     priceRange: "£20-50",
     dateReceived: "2026-06-09",
-    status: "Draft ready",
+    status: "draft_ready",
     sentiment: "Positive",
     draftReplies: [
       "Hi Sarah, thank you for such a lovely review. We are delighted you were pleased with the result and that the team made you feel welcome from start to finish. Thanks, the Example Hair Salon team.",
@@ -252,7 +252,7 @@ export const demoReviews: Review[] = [
     googleRating: 4.5,
     googleReviewCount: 89,
     dateReceived: "2026-06-08",
-    status: "New",
+    status: "new",
     sentiment: "Complaint",
     draftReplies: [
       "Hi James, thank you for raising this. We are sorry to hear that your wait was longer than expected and that the delay was not explained clearly. Please contact Example Dental Practice directly so the team can look into this properly.",
@@ -275,7 +275,7 @@ export const demoReviews: Review[] = [
     googleReviewCount: 156,
     priceRange: "£50-150",
     dateReceived: "2026-06-07",
-    status: "Posted",
+    status: "posted",
     sentiment: "Positive",
     draftReplies: [
       "Thanks Imran, we really appreciate your review. It is great to hear you were happy with the MOT, pricing, and communication. Thanks, the Example Local Garage team.",
@@ -298,7 +298,7 @@ export const demoReviews: Review[] = [
     googleReviewCount: 211,
     priceRange: "£10-20",
     dateReceived: "2026-06-06",
-    status: "Edited",
+    status: "edited",
     sentiment: "Complaint",
     draftReplies: [
       "Hi Priya, thank you for your feedback. We are pleased you enjoyed the food, but we are sorry the delivery was late and that an item was missing. Please contact Example Indian Restaurant directly with your order details so we can look into this for you.",
@@ -320,7 +320,7 @@ export const demoReviews: Review[] = [
     googleRating: 4.6,
     googleReviewCount: 73,
     dateReceived: "2026-06-05",
-    status: "Copied",
+    status: "copied",
     sentiment: "Positive",
     draftReplies: [
       "Thank you, Rebecca. We are pleased the team kept you updated and helped make the sale feel less stressful. Kind regards, the Example Estate Agents team.",
@@ -342,7 +342,7 @@ export const demoReviews: Review[] = [
     googleRating: 4.9,
     googleReviewCount: 98,
     dateReceived: "2026-06-04",
-    status: "Draft ready",
+    status: "draft_ready",
     sentiment: "Positive",
     draftReplies: [
       "Thanks Mark, we really appreciate your review. We are glad the leak was fixed clearly and without fuss. Thanks, the Example Plumbing Services team.",
@@ -353,7 +353,7 @@ export const demoReviews: Review[] = [
 ];
 
 export const savedReplies: SavedReply[] = demoReviews
-  .filter((review) => review.status !== "New")
+  .filter((review) => review.status !== "new")
   .slice(0, 5)
   .map((review, index) => ({
     id: `saved_${review.id}`,

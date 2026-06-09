@@ -12,8 +12,8 @@ export default function DemoPage() {
           <div>
             <h1 className="text-4xl font-semibold text-slate-950">Product demo</h1>
             <p className="mt-3 max-w-2xl text-lg leading-8 text-slate-600">
-              A preview of the Review Inbox using mock Google Business Profile
-              reviews from UK local businesses.
+              A preview of the Review Inbox using demo Google-style reviews
+              from fictional UK local businesses.
             </p>
           </div>
           <Link href="/app/reviews" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white">

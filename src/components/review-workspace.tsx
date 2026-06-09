@@ -11,64 +11,76 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { demoLocations } from "@/lib/demo-data";
-import { buildMockReplies } from "@/lib/providers/ai";
+import { getLocationKey, usePilotStore } from "@/lib/pilot-store";
 import type { ReplyLength, Review, ReviewStatus, Tone } from "@/lib/types";
 import { ReviewStars } from "@/components/review-stars";
 import { StatusBadge } from "@/components/status-badge";
 
 const statuses: ReviewStatus[] = [
-  "New",
-  "Draft ready",
-  "Edited",
-  "Copied",
-  "Posted",
-  "Archived",
+  "draft_ready",
+  "new",
+  "edited",
+  "copied",
+  "posted",
+  "archived",
 ];
 
+const statusLabels: Record<ReviewStatus | "All", string> = {
+  All: "All",
+  new: "New",
+  draft_ready: "Draft ready",
+  edited: "Edited",
+  copied: "Copied",
+  posted: "Posted",
+  archived: "Archived",
+};
+
 export function ReviewInbox({ reviews }: { reviews: Review[] }) {
-  const [items, setItems] = useState(reviews);
+  const store = usePilotStore();
+  const items = store.hydrated ? store.reviews : reviews;
+  const locations = store.locations;
   const [filter, setFilter] = useState<ReviewStatus | "All">("All");
   const [locationFilter, setLocationFilter] = useState("All locations");
+  const [generatingId, setGeneratingId] = useState<string | null>(null);
 
   const visibleReviews = useMemo(() => {
     return items.filter((review) => {
       const statusMatches = filter === "All" || review.status === filter;
       const locationMatches =
         locationFilter === "All locations" ||
-        `${review.businessName} — ${review.location}` === locationFilter;
+        getLocationKey(review) === locationFilter;
 
       return statusMatches && locationMatches;
     });
   }, [filter, items, locationFilter]);
 
-  function updateStatus(id: string, status: ReviewStatus) {
-    setItems((current) =>
-      current.map((review) => (review.id === id ? { ...review, status } : review)),
-    );
-  }
-
-  function generateDrafts(id: string) {
-    setItems((current) =>
-      current.map((review) =>
-        review.id === id
-          ? {
-              ...review,
-              status: "Draft ready",
-              draftReplies: buildMockReplies({
-                reviewText: review.reviewText,
-                starRating: review.rating,
-                customerName: review.customerName,
-                businessName: review.businessName,
-                businessType: review.businessType,
-                location: review.location,
-                tone: "Professional",
-                replyLength: "Standard",
-              }),
-            }
-          : review,
-      ),
-    );
+  async function generateDrafts(review: Review) {
+    setGeneratingId(review.id);
+    const location = locations.find((item) => getLocationKey(item) === getLocationKey(review));
+    const response = await fetch("/api/replies", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        reviewText: review.reviewText,
+        starRating: review.rating,
+        customerName: review.customerName,
+        businessName: review.businessName,
+        businessType: review.businessType,
+        location: review.location,
+        tone: location?.brandVoice.preferredTone ?? "Professional",
+        replyLength: location?.brandVoice.defaultLength ?? "Standard",
+        brandVoiceSettings: location?.brandVoice,
+      }),
+    });
+    const data = (await response.json()) as { replies: string[] };
+    store.updateReview(review.id, {
+      status: "draft_ready",
+      draftReplies: data.replies,
+      selectedReplyIndex: 0,
+      selectedReply: data.replies[0],
+      editedReply: data.replies[0],
+    });
+    setGeneratingId(null);
   }
 
   return (
@@ -76,12 +88,12 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
       <section className="grid gap-4 md:grid-cols-4">
         {[
           ["Visible reviews", visibleReviews.length],
-          ["Demo locations", demoLocations.length],
+          ["Demo locations", locations.length],
           [
             "Drafts ready",
-            visibleReviews.filter((item) => item.status === "Draft ready").length,
+            visibleReviews.filter((item) => item.status === "draft_ready").length,
           ],
-          ["Posted", visibleReviews.filter((item) => item.status === "Posted").length],
+          ["posted", visibleReviews.filter((item) => item.status === "posted").length],
         ].map(([label, value]) => (
           <div key={label} className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
             <p className="text-sm font-medium text-slate-500">{label}</p>
@@ -95,7 +107,7 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Review Inbox</h2>
             <p className="mt-1 text-sm text-slate-600">
-              Fictional Google-style reviews are imported here and prepared as reply drafts.
+              Demo Google-style reviews are imported here and prepared as reply drafts.
             </p>
           </div>
           <Link
@@ -115,7 +127,7 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
               className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
             >
               <option>All locations</option>
-              {demoLocations.map((location) => (
+              {locations.map((location) => (
                 <option key={location.id}>
                   {location.businessName} — {location.location}
                 </option>
@@ -139,7 +151,7 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
-              {status}
+              {statusLabels[status]}
             </button>
           ))}
         </div>
@@ -200,35 +212,46 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
                     <ExternalLink className="size-4" />
                   </Link>
                   <button
-                    onClick={() => generateDrafts(review.id)}
+                    onClick={() => generateDrafts(review)}
                     className="inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 text-slate-700 hover:border-blue-200 hover:text-blue-700"
                     title="Generate drafts"
                   >
                     <Sparkles className="size-4" />
+                    <span className="sr-only">
+                      {generatingId === review.id ? "Generating" : "Generate drafts"}
+                    </span>
                   </button>
                   <button
-                    onClick={() => updateStatus(review.id, "Edited")}
+                    onClick={() => store.updateReviewStatus(review.id, "edited")}
                     className="inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 text-slate-700 hover:border-blue-200 hover:text-blue-700"
                     title="Edit reply"
                   >
                     <Edit3 className="size-4" />
                   </button>
                   <button
-                    onClick={() => updateStatus(review.id, "Copied")}
+                    onClick={() => {
+                      navigator.clipboard?.writeText(
+                        review.editedReply ??
+                          review.selectedReply ??
+                          review.draftReplies[0] ??
+                          "",
+                      );
+                      store.updateReviewStatus(review.id, "copied");
+                    }}
                     className="inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 text-slate-700 hover:border-blue-200 hover:text-blue-700"
                     title="Copy reply"
                   >
                     <Copy className="size-4" />
                   </button>
                   <button
-                    onClick={() => updateStatus(review.id, "Posted")}
+                    onClick={() => store.updateReviewStatus(review.id, "posted")}
                     className="inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 text-slate-700 hover:border-blue-200 hover:text-blue-700"
                     title="Mark as posted"
                   >
                     <CheckCircle2 className="size-4" />
                   </button>
                   <button
-                    onClick={() => updateStatus(review.id, "Archived")}
+                    onClick={() => store.updateReviewStatus(review.id, "archived")}
                     className="inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 text-slate-700 hover:border-blue-200 hover:text-blue-700"
                     title="Archive"
                   >
@@ -244,29 +267,83 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
   );
 }
 
-export function ReviewDetail({ review }: { review: Review }) {
-  const [tone, setTone] = useState<Tone>("Professional");
-  const [length, setLength] = useState<ReplyLength>("Standard");
-  const [options, setOptions] = useState(review.draftReplies);
-  const [selected, setSelected] = useState(0);
-  const [reply, setReply] = useState(review.draftReplies[0] ?? "");
-  const [status, setStatus] = useState<ReviewStatus>(review.status);
+export function ReviewDetail({ review }: { review?: Review }) {
+  const store = usePilotStore();
+  const activeReview =
+    store.reviews.find((item) => item.id === review?.id) ?? review ?? store.reviews[0];
+  const location = activeReview
+    ? store.locations.find(
+        (item) => getLocationKey(item) === getLocationKey(activeReview),
+      )
+    : undefined;
+  const [tone, setTone] = useState<Tone>(
+    location?.brandVoice.preferredTone ?? "Professional",
+  );
+  const [length, setLength] = useState<ReplyLength>(
+    location?.brandVoice.defaultLength ?? "Standard",
+  );
+  const selected = activeReview?.selectedReplyIndex ?? 0;
+  const options = activeReview?.draftReplies ?? [];
+  const reply =
+    activeReview?.editedReply ??
+    activeReview?.selectedReply ??
+    activeReview?.draftReplies[selected] ??
+    "";
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  function regenerate() {
-    const next = buildMockReplies({
-      reviewText: review.reviewText,
-      starRating: review.rating,
-      customerName: review.customerName,
-      businessName: review.businessName,
-      businessType: review.businessType,
-      location: review.location,
-      tone,
-      replyLength: length,
+  if (!activeReview) {
+    return (
+      <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
+        <h2 className="text-xl font-semibold text-slate-950">Review not found</h2>
+      </section>
+    );
+  }
+
+  function patchReview(patch: Partial<Review>) {
+    store.updateReview(activeReview.id, patch);
+  }
+
+  async function regenerate() {
+    setIsGenerating(true);
+    const response = await fetch("/api/replies", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        reviewText: activeReview.reviewText,
+        starRating: activeReview.rating,
+        customerName: activeReview.customerName,
+        businessName: activeReview.businessName,
+        businessType: activeReview.businessType,
+        location: activeReview.location,
+        tone,
+        replyLength: length,
+        brandVoiceSettings: location?.brandVoice,
+      }),
     });
-    setOptions(next);
-    setSelected(0);
-    setReply(next[0]);
-    setStatus("Draft ready");
+    const data = (await response.json()) as { replies: string[] };
+    patchReview({
+      status: "draft_ready",
+      draftReplies: data.replies,
+      selectedReplyIndex: 0,
+      selectedReply: data.replies[0],
+      editedReply: data.replies[0],
+    });
+    setIsGenerating(false);
+  }
+
+  function saveReply() {
+    patchReview({ status: "edited", editedReply: reply, selectedReply: reply });
+    store.saveReply({
+      id: `saved_${activeReview.id}`,
+      reviewId: activeReview.id,
+      originalReviewSnippet: activeReview.reviewText,
+      replyPreview: reply,
+      tone,
+      businessType: activeReview.businessType,
+      dateSaved: new Date().toISOString().slice(0, 10),
+      usageCount: 1,
+      sentiment: activeReview.sentiment,
+    });
   }
 
   return (
@@ -274,40 +351,40 @@ export function ReviewDetail({ review }: { review: Review }) {
       <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold text-blue-700">{review.source} review</p>
+            <p className="text-sm font-semibold text-blue-700">{activeReview.source} review</p>
             <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-              {review.customerName}
+              {activeReview.customerName}
             </h2>
           </div>
-          <StatusBadge status={status} />
+          <StatusBadge status={activeReview.status} />
         </div>
         <div className="mt-4 flex items-center gap-3">
-          <ReviewStars rating={review.rating} />
-          <span className="text-sm text-slate-500">{review.dateReceived}</span>
+          <ReviewStars rating={activeReview.rating} />
+          <span className="text-sm text-slate-500">{activeReview.dateReceived}</span>
         </div>
         <p className="mt-5 rounded-lg bg-slate-50 p-4 text-sm leading-7 text-slate-700">
-          {review.reviewText}
+          {activeReview.reviewText}
         </p>
         <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
           <div>
             <dt className="font-semibold text-slate-950">Business/location</dt>
             <dd className="mt-1 text-slate-600">
-              {review.businessName}, {review.location}
+              {activeReview.businessName}, {activeReview.location}
             </dd>
-            {review.address ? (
-              <dd className="mt-1 text-slate-500">{review.address}</dd>
+            {activeReview.address ? (
+              <dd className="mt-1 text-slate-500">{activeReview.address}</dd>
             ) : null}
           </div>
           <div>
             <dt className="font-semibold text-slate-950">Business type</dt>
-            <dd className="mt-1 text-slate-600">{review.businessType}</dd>
+            <dd className="mt-1 text-slate-600">{activeReview.businessType}</dd>
           </div>
           <div>
             <dt className="font-semibold text-slate-950">Demo profile</dt>
             <dd className="mt-1 text-slate-600">
-              {review.googleRating
-                ? `Google ${review.googleRating.toFixed(1)} from ${
-                    review.googleReviewCount
+              {activeReview.googleRating
+                ? `Google ${activeReview.googleRating.toFixed(1)} from ${
+                    activeReview.googleReviewCount
                   } reviews`
                 : "Fictional demo profile"}
             </dd>
@@ -315,8 +392,8 @@ export function ReviewDetail({ review }: { review: Review }) {
           <div>
             <dt className="font-semibold text-slate-950">Contact</dt>
             <dd className="mt-1 text-slate-600">
-              {review.phone ?? "Not set"}
-              {review.website ? ` · ${review.website}` : ""}
+              {activeReview.phone ?? "Not set"}
+              {activeReview.website ? ` · ${activeReview.website}` : ""}
             </dd>
           </div>
         </dl>
@@ -336,7 +413,7 @@ export function ReviewDetail({ review }: { review: Review }) {
             className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
           >
             <Sparkles className="size-4" />
-            Generate drafts
+            {isGenerating ? "Generating..." : "Generate drafts"}
           </button>
         </div>
 
@@ -368,12 +445,16 @@ export function ReviewDetail({ review }: { review: Review }) {
         </div>
 
         <div className="mt-5 grid gap-3">
-          {options.map((option, index) => (
+          {options.length ? options.map((option, index) => (
             <button
-              key={option}
+              key={`${option}-${index}`}
               onClick={() => {
-                setSelected(index);
-                setReply(option);
+                patchReview({
+                  selectedReplyIndex: index,
+                  selectedReply: option,
+                  editedReply: option,
+                  status: "draft_ready",
+                });
               }}
               className={`rounded-lg border p-4 text-left text-sm leading-6 ${
                 selected === index
@@ -386,7 +467,12 @@ export function ReviewDetail({ review }: { review: Review }) {
               </span>
               {option}
             </button>
-          ))}
+          )) : (
+            <div className="rounded-lg border border-dashed border-slate-200 p-4 text-sm leading-6 text-slate-600">
+              No draft options yet. Generate drafts to create 3 reply options
+              using this location&apos;s brand voice.
+            </div>
+          )}
         </div>
 
         <label className="mt-5 block text-sm font-semibold text-slate-700">
@@ -394,8 +480,11 @@ export function ReviewDetail({ review }: { review: Review }) {
           <textarea
             value={reply}
             onChange={(event) => {
-              setReply(event.target.value);
-              setStatus("Edited");
+              patchReview({
+                editedReply: event.target.value,
+                selectedReply: event.target.value,
+                status: "edited",
+              });
             }}
             rows={7}
             className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-3 text-sm leading-6"
@@ -404,25 +493,35 @@ export function ReviewDetail({ review }: { review: Review }) {
 
         <div className="mt-4 flex flex-wrap gap-2">
           <button
-            onClick={() => setStatus("Copied")}
+            onClick={() => {
+              navigator.clipboard?.writeText(reply);
+              patchReview({ status: "copied", selectedReply: reply, editedReply: reply });
+            }}
             className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-blue-200 hover:text-blue-700"
           >
             <Copy className="size-4" />
             Copy
           </button>
           <button
-            onClick={() => setStatus("Edited")}
+            onClick={saveReply}
             className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-blue-200 hover:text-blue-700"
           >
             <Save className="size-4" />
             Save
           </button>
           <button
-            onClick={() => setStatus("Posted")}
+            onClick={() => patchReview({ status: "posted", selectedReply: reply, editedReply: reply })}
             className="inline-flex items-center gap-2 rounded-lg bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
           >
             <CheckCircle2 className="size-4" />
             Mark as posted
+          </button>
+          <button
+            onClick={() => patchReview({ status: "archived" })}
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-blue-200 hover:text-blue-700"
+          >
+            <Archive className="size-4" />
+            Archive
           </button>
         </div>
       </section>

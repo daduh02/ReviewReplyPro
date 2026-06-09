@@ -1,13 +1,10 @@
 "use client";
 
-import { CheckCircle2, Download, Link2, Mail, RotateCcw } from "lucide-react";
-import { useState } from "react";
+import { Clock3, Mail, MessageSquarePlus, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { mockLocations } from "@/lib/demo-data";
 
 export function IntegrationsPanel() {
-  const [connected, setConnected] = useState(true);
-  const [lastSync, setLastSync] = useState("9 June 2026, 12:15");
-
   return (
     <div className="space-y-6">
       <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
@@ -15,42 +12,37 @@ export function IntegrationsPanel() {
           <div>
             <p className="text-sm font-semibold text-blue-700">Google Business Profile</p>
             <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-              Mock connection ready
+              Google Business Profile connection coming next
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              Use the Google account that manages your verified Google Business
-              Profile. We will never ask for your Google password.
+              Demo Google-style reviews are available now for fictional example
+              businesses. Manual review entry is active now while the real Google
+              OAuth flow is built.
             </p>
           </div>
-          <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-700 ring-1 ring-emerald-200">
-            <CheckCircle2 className="size-4" />
-            {connected ? "Connected" : "Disconnected"}
+          <span className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-700 ring-1 ring-blue-200">
+            <Sparkles className="size-4" />
+            Demo Google-style reviews
           </span>
         </div>
         <div className="mt-5 flex flex-wrap gap-2">
-          <button
-            onClick={() => setConnected(true)}
+          <Link
+            href="/app/generate"
             className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
           >
-            <Link2 className="size-4" />
-            Connect Google Business Profile
-          </button>
-          <button
-            onClick={() => setLastSync("Just now")}
+            <MessageSquarePlus className="size-4" />
+            Manual review entry is active now
+          </Link>
+          <span
             className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-blue-200 hover:text-blue-700"
           >
-            <Download className="size-4" />
-            Import latest reviews
-          </button>
-          <button
-            onClick={() => setConnected(false)}
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-blue-200 hover:text-blue-700"
-          >
-            <RotateCcw className="size-4" />
-            Disconnect mock
-          </button>
+            <Clock3 className="size-4" />
+            Google Business Profile connection coming next
+          </span>
         </div>
-        <p className="mt-4 text-sm text-slate-600">Last sync: {lastSync}</p>
+        <p className="mt-4 text-sm text-slate-600">
+          Demo Google-style reviews are seeded locally for product testing.
+        </p>
         <div className="mt-5 grid gap-3 md:grid-cols-3">
           {mockLocations.map((location) => (
             <div key={location.id} className="rounded-lg border border-slate-200 p-4">
@@ -90,8 +82,9 @@ export function IntegrationsPanel() {
         <div className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
           <h3 className="font-semibold text-slate-950">Manual entry</h3>
           <p className="mt-3 text-sm leading-6 text-slate-600">
-            Use manual review entry as a fallback when a review is not available
-            through a connected source.
+            Manual review entry is active now. Add a review, save it to the
+            inbox, generate replies, edit, copy, post, archive, and save useful
+            replies for reuse.
           </p>
         </div>
       </section>

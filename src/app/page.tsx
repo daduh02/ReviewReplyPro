@@ -62,7 +62,7 @@ export default function Home() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-semibold text-slate-950">Review Inbox</p>
-                    <p className="text-xs text-slate-500">Mock Google sync active</p>
+                    <p className="text-xs text-slate-500">Demo Google-style reviews</p>
                   </div>
                   <Inbox className="size-5 text-blue-600" />
                 </div>
@@ -92,7 +92,7 @@ export default function Home() {
         <Section title="How it works">
           <div className="grid gap-4 md:grid-cols-3">
             {[
-              ["Connect", "Simulate Google Business Profile sync locally."],
+              ["Collect", "Use demo Google-style reviews or add reviews manually."],
               ["Draft", "Generate 3 British English reply options per review."],
               ["Post", "Edit, copy, save, and mark replies as posted."],
             ].map(([title, body]) => (
