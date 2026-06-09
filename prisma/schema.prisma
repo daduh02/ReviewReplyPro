@@ -203,6 +203,24 @@ model UsageEvent {
   createdAt   DateTime  @default(now())
 }
 
+model Lead {
+  id                     String   @id @default(cuid())
+  name                   String
+  businessName           String   @map("business_name")
+  businessType           String   @map("business_type")
+  numberOfLocations      Int      @map("number_of_locations")
+  email                  String
+  mobileNumber           String?  @map("mobile_number")
+  currentReviewPlatform  String   @map("current_review_platform")
+  averageReviewsPerMonth String   @map("average_reviews_per_month")
+  biggestChallenge       String   @map("biggest_challenge")
+  status                 String   @default("new")
+  createdAt              DateTime @default(now()) @map("created_at")
+  updatedAt              DateTime @updatedAt @map("updated_at")
+
+  @@map("leads")
+}
+
 model ActivityEvent {
   id          String     @id @default(cuid())
   workspaceId String     @map("workspace_id")

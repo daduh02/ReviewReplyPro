@@ -43,10 +43,10 @@ export default function Home() {
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
-                  href="/app/reviews"
+                  href="/pilot"
                   className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
                 >
-                  Start free
+                  Join the Pilot Programme
                   <ArrowRight className="size-4" />
                 </Link>
                 <Link
@@ -158,8 +158,8 @@ export default function Home() {
                 and OpenAI providers when the MVP is ready to grow.
               </p>
             </div>
-            <Link href="/app/reviews" className="rounded-lg bg-white px-5 py-3 text-sm font-semibold text-blue-700">
-              Start free
+            <Link href="/pilot" className="rounded-lg bg-white px-5 py-3 text-sm font-semibold text-blue-700">
+              Join the Pilot Programme
             </Link>
           </div>
         </section>

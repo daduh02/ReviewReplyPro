@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 const links = [
+  { href: "/pilot", label: "Pilot Programme" },
   { href: "/pricing", label: "Pricing" },
   { href: "/demo", label: "Demo" },
   { href: "/login", label: "Log in" },
@@ -24,10 +25,10 @@ export function MarketingNav() {
           ))}
         </div>
         <Link
-          href="/app/reviews"
+          href="/pilot"
           className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
         >
-          Start free
+          Join the Pilot Programme
         </Link>
       </nav>
     </header>

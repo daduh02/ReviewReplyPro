@@ -6,6 +6,7 @@ import {
   MapPin,
   MessageSquareText,
   SlidersHorizontal,
+  UserRoundCheck,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -17,6 +18,7 @@ import {
   customerSavedReplies,
 } from "@/lib/customer-data";
 import { requireAdmin } from "@/lib/admin-auth";
+import { getDb } from "@/lib/db";
 
 const controlCards = [
   {
@@ -49,10 +51,26 @@ const controlCards = [
     description: "See Free for Life and pilot billing controls.",
     icon: CreditCard,
   },
+  {
+    href: "/admin/leads",
+    title: "Leads",
+    description: "Review pilot interest forms and manage lead status.",
+    icon: UserRoundCheck,
+    superAdminOnly: true,
+  },
 ];
 
 export default async function AdminOverviewPage() {
   const admin = await requireAdmin();
+  const [totalLeads, newLeads, demoBooked, pilotCustomerLeads] =
+    admin.role === "super_admin"
+      ? await Promise.all([
+          getDb().lead.count(),
+          getDb().lead.count({ where: { status: "new" } }),
+          getDb().lead.count({ where: { status: "demo_booked" } }),
+          getDb().lead.count({ where: { status: "pilot_customer" } }),
+        ])
+      : [0, 0, 0, 0];
   const reportingLocations = [...demoLocations, ...customerLocations];
   const reportingReviews = [...demoReviews, ...customerReviews];
   const reportingSavedReplies = [...savedReplies, ...customerSavedReplies];
@@ -93,6 +111,15 @@ export default async function AdminOverviewPage() {
         </div>
       </section>
 
+      {admin.role === "super_admin" ? (
+        <section className="grid gap-4 md:grid-cols-4">
+          <Metric label="Total Leads" value={totalLeads} />
+          <Metric label="New Leads" value={newLeads} />
+          <Metric label="Demo Booked" value={demoBooked} />
+          <Metric label="Pilot Customers" value={pilotCustomerLeads} />
+        </section>
+      ) : null}
+
       <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -116,7 +143,9 @@ export default async function AdminOverviewPage() {
           ) : null}
         </div>
         <div className="mt-5 grid gap-4 lg:grid-cols-3">
-          {controlCards.map((card) => {
+          {controlCards
+            .filter((card) => !card.superAdminOnly || admin.role === "super_admin")
+            .map((card) => {
             const Icon = card.icon;
             return (
               <Link
@@ -267,6 +296,15 @@ export default async function AdminOverviewPage() {
           </p>
         </div>
       </section>
+    </div>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
+      <p className="text-sm font-medium text-slate-500">{label}</p>
+      <p className="mt-2 text-3xl font-semibold text-slate-950">{value}</p>
     </div>
   );
 }

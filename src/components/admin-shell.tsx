@@ -7,6 +7,7 @@ import {
   MapPinned,
   ShieldCheck,
   SlidersHorizontal,
+  UserRoundCheck,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -16,6 +17,7 @@ import type { AdminRole } from "@/lib/admin-auth";
 const adminLinks = [
   { href: "/admin", label: "Admin Overview", icon: ShieldCheck },
   { href: "/admin/accounts", label: "Accounts", icon: MapPinned, superAdminOnly: true },
+  { href: "/admin/leads", label: "Leads", icon: UserRoundCheck, superAdminOnly: true },
   { href: "/admin/users", label: "Admin Users", icon: Users, superAdminOnly: true },
   { href: "/app/reviews", label: "All Reviews", icon: Inbox },
   { href: "/app/saved-replies", label: "Saved Replies", icon: FileText },
