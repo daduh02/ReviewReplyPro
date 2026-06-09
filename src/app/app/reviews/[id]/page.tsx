@@ -149,6 +149,11 @@ export default async function ReviewDetailPage({
               >
                 <span className="mb-2 block text-xs font-semibold uppercase tracking-wide">
                   Option {reply.variant}
+                  {admin.role === "super_admin" ? (
+                    <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-500 ring-1 ring-slate-200">
+                      {reply.generationSource}
+                    </span>
+                  ) : null}
                 </span>
                 {reply.body}
               </button>

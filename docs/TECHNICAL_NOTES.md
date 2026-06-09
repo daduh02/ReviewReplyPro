@@ -1,7 +1,7 @@
 # Technical Notes
 
-Documentation Version: 0.2.0
-Last Updated: 2026-06-09 17:38 BST
+Documentation Version: 0.3.0
+Last Updated: 2026-06-09 17:57 BST
 Status: Current platform state after documentation audit.
 
 ## Data Model Summary
@@ -78,18 +78,11 @@ Implemented:
 
 - `/api/replies` calls OpenAI chat completions when `OPENAI_API_KEY` is present.
 - `/api/replies` falls back to local deterministic replies if OpenAI is missing, fails or returns invalid JSON.
-- Review workflow server actions generate and persist three reply options against a review.
+- Review workflow server actions call the same OpenAI-capable provider and persist three reply options against a review.
 - Generated replies use location brand voice inputs.
+- Generated replies persist `generation_source` as `openai` or `fallback`.
+- Super Admin can see the generation source on reply options.
 - Reply actions create activity events.
-
-Implemented differently:
-
-- `OpenAIReplyProvider` in `src/lib/providers/ai.ts` currently returns local fallback replies even when `OPENAI_API_KEY` is set.
-- The main review workflow uses this provider, so it does not yet call OpenAI directly.
-
-In Progress:
-
-- Aligning the server action provider with the OpenAI-capable API path.
 
 Prompt requirements:
 
@@ -173,17 +166,16 @@ Current build note:
 Known gaps:
 
 - No automated test suite.
-- Main server action AI provider does not call OpenAI yet.
 - No real GBP review sync.
 - No automated Stripe billing lifecycle.
 - No email notifications.
-- Some public demo components still use static fictional demo state.
-- Admin overview uses some legacy static demo/customer arrays for counts.
+- Public demo components still use static fictional demo state by design.
+- Authenticated/admin areas no longer use static fictional demo businesses.
 
 Risks:
 
 - Manual SQL migrations must be applied carefully to Turso.
-- Local fallback replies can hide OpenAI provider failures.
+- Local fallback replies can hide OpenAI provider failures if monitoring is not added.
 - Business Admin scoping should be tested thoroughly as more customers are added.
 - Seeded pilot data can overwrite selected fields.
 
@@ -201,4 +193,4 @@ Outdated docs:
 
 Docs requiring review:
 
-- Technical notes after OpenAI provider and GBP sync implementation.
+- Technical notes after GBP sync implementation.

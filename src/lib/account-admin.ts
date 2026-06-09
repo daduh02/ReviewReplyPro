@@ -224,6 +224,7 @@ export async function ensurePilotCustomerAccounts() {
             tone: review.sentiment === "Complaint" ? "Empathetic" : "Friendly",
             length: "Standard",
             body: reply,
+            generationSource: "fallback",
             selected: index === 0,
           },
           create: {
@@ -233,6 +234,7 @@ export async function ensurePilotCustomerAccounts() {
             tone: review.sentiment === "Complaint" ? "Empathetic" : "Friendly",
             length: "Standard",
             body: reply,
+            generationSource: "fallback",
             selected: index === 0,
           },
         });

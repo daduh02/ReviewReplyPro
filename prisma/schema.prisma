@@ -136,16 +136,17 @@ model Review {
 }
 
 model GeneratedReply {
-  id        String   @id @default(cuid())
-  reviewId  String
-  review    Review   @relation(fields: [reviewId], references: [id])
-  variant   Int
-  tone      String
-  length    String
-  body      String
-  selected  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String   @id @default(cuid())
+  reviewId         String
+  review           Review   @relation(fields: [reviewId], references: [id])
+  variant          Int
+  tone             String
+  length           String
+  body             String
+  generationSource String   @default("fallback") @map("generation_source")
+  selected         Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 model SavedReply {

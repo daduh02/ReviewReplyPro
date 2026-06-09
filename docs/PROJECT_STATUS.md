@@ -1,7 +1,7 @@
 # Project Status
 
-Documentation Version: 0.2.0
-Last Updated: 2026-06-09 17:38 BST
+Documentation Version: 0.3.0
+Last Updated: 2026-06-09 17:57 BST
 Status: Current platform state after full documentation audit.
 
 ## Overview
@@ -63,7 +63,6 @@ Implemented API routes:
 Implemented differently:
 
 - `/api/stripe/*` routes are scaffolded placeholders.
-- `/api/replies` can call OpenAI, but the main review workflow still uses the local provider fallback.
 
 ## Implemented Features
 
@@ -129,10 +128,10 @@ Implemented:
 - Save reply to saved replies.
 - Brand voice settings are passed into reply generation.
 - `/api/replies` can call OpenAI when configured.
-
-Implemented differently:
-
-- The main review workflow currently uses the local provider fallback rather than the OpenAI-capable API route.
+- Main review workflow uses OpenAI when `OPENAI_API_KEY` is configured.
+- Main review workflow falls back locally for missing keys, failed requests or invalid OpenAI responses.
+- Generated replies store whether they came from `openai` or `fallback`.
+- Super Admin can see the generation source; Business Admin users cannot.
 
 ### Leads
 
@@ -161,6 +160,7 @@ Implemented:
 Implemented:
 
 - Super Admin overview.
+- Super Admin overview uses database records only.
 - Admin accounts page.
 - Admin users page.
 - Admin leads page.
@@ -188,8 +188,6 @@ Implemented:
 
 In Progress:
 
-- OpenAI provider alignment for the main review workflow.
-- Admin overview conversion to database-only reporting.
 - Pilot customer onboarding refinement.
 - Safer lead-to-pilot conversion workflow.
 - More complete Business Admin permission testing.
@@ -214,8 +212,6 @@ Planned:
 Known Issues:
 
 - `next build` passes but Turbopack reports a non-blocking filesystem trace warning for the admin markdown reader.
-- The main server action AI provider currently returns local fallback replies even when `OPENAI_API_KEY` exists.
-- Admin overview includes legacy static demo/customer data in some high-level reporting.
 - No `npm test` script exists.
 - Stripe routes are placeholders.
 - Google Business Profile sync is not implemented.
@@ -224,8 +220,6 @@ Known Issues:
 
 Technical Debt:
 
-- Align `OpenAIReplyProvider` with `/api/replies` or move OpenAI generation into a shared server-side service.
-- Replace all remaining static admin reporting arrays with database queries.
 - Add tests for auth redirects, role access, review workflow, lead capture and account protection.
 - Add a migration/runbook process for Turso production schema changes.
 - Consider storing docs content in a build-safe static import pattern if the Turbopack warning becomes problematic.
@@ -234,11 +228,11 @@ Technical Debt:
 
 Next Priorities:
 
-1. Make main workflow AI generation call OpenAI when configured.
-2. Remove legacy static data from admin reporting.
-3. Add automated workflow tests.
-4. Build lead-to-pilot conversion.
-5. Add production runbook and migration checklist.
+1. Add automated workflow tests.
+2. Build lead-to-pilot conversion.
+3. Add production runbook and migration checklist.
+4. Add Stripe billing implementation.
+5. Plan Google Business Profile sync.
 
 ## Pilot Customers
 
@@ -288,7 +282,6 @@ Planned or scaffolded:
 Open Questions:
 
 - Should seeded pilot customer constants remain code-owned, or should all real pilot data become admin/database-only?
-- Should OpenAI generation be called directly from server actions or through the `/api/replies` route?
 - What is the exact first paid plan price and billing policy?
 - Which pilot businesses should receive Business Admin access first?
 - What minimum automated test suite should block production deploys?
@@ -309,7 +302,7 @@ Outdated docs:
 
 Docs requiring review:
 
-- README after OpenAI provider alignment.
+- README after provider observability or model routing changes.
 - Technical Notes after GBP sync implementation.
 - Admin Guide after Stripe billing automation.
 - Pilot Customers after pilot data ownership is decided.

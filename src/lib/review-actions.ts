@@ -112,7 +112,7 @@ export async function generateRepliesAction(formData: FormData) {
   const replyLength = (optionalString(formData, "replyLength") ??
     brandVoiceSettings.defaultLength) as ReplyLength;
   const provider = getAIReplyProvider();
-  const replies = await provider.generateReplies({
+  const generation = await provider.generateReplies({
     reviewText: review.reviewText,
     starRating: review.starRating,
     customerName: review.customerName ?? undefined,
@@ -127,7 +127,7 @@ export async function generateRepliesAction(formData: FormData) {
   await db.generatedReply.deleteMany({ where: { reviewId } });
 
   const created = await Promise.all(
-    replies.slice(0, 3).map((body, index) =>
+    generation.replies.slice(0, 3).map((body, index) =>
       db.generatedReply.create({
         data: {
           reviewId,
@@ -135,6 +135,7 @@ export async function generateRepliesAction(formData: FormData) {
           tone,
           length: replyLength,
           body,
+          generationSource: generation.source,
           selected: index === 0,
         },
       }),
@@ -158,7 +159,12 @@ export async function generateRepliesAction(formData: FormData) {
     reviewId,
     eventType: "reply.generated",
     summary: `Generated ${created.length} reply options`,
-    metadata: { tone, replyLength },
+    metadata: {
+      tone,
+      replyLength,
+      generationSource: generation.source,
+      warning: generation.warning ?? null,
+    },
   });
 
   revalidatePath("/app");

@@ -116,6 +116,7 @@ CREATE TABLE "GeneratedReply" (
     "tone" TEXT NOT NULL,
     "length" TEXT NOT NULL,
     "body" TEXT NOT NULL,
+    "generation_source" TEXT NOT NULL DEFAULT 'fallback',
     "selected" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -1,5 +1,6 @@
-import { defaultBrandVoice } from "@/lib/demo-data";
 import type { BrandVoiceSettings, ReplyLength, Tone } from "@/lib/types";
+
+export type ReplyGenerationSource = "openai" | "fallback";
 
 export type ReplyGenerationInput = {
   reviewText: string;
@@ -13,25 +14,89 @@ export type ReplyGenerationInput = {
   brandVoiceSettings?: BrandVoiceSettings;
 };
 
+export type ReplyGenerationResult = {
+  replies: string[];
+  source: ReplyGenerationSource;
+  warning?: string;
+};
+
+type OpenAIChatResponse = {
+  choices?: Array<{ message?: { content?: string } }>;
+};
+
 export interface AIReplyProvider {
-  generateReplies(input: ReplyGenerationInput): Promise<string[]>;
+  generateReplies(input: ReplyGenerationInput): Promise<ReplyGenerationResult>;
 }
 
 export class MockAIReplyProvider implements AIReplyProvider {
-  async generateReplies(input: ReplyGenerationInput) {
-    return buildMockReplies(input);
+  async generateReplies(input: ReplyGenerationInput): Promise<ReplyGenerationResult> {
+    return {
+      replies: buildMockReplies(input),
+      source: "fallback" as const,
+    };
   }
 }
 
 export class OpenAIReplyProvider implements AIReplyProvider {
-  async generateReplies(input: ReplyGenerationInput) {
+  async generateReplies(input: ReplyGenerationInput): Promise<ReplyGenerationResult> {
     if (!process.env.OPENAI_API_KEY) {
       return new MockAIReplyProvider().generateReplies(input);
     }
 
-    // Placeholder for a future OpenAI SDK call. Keeping this local-safe means
-    // the MVP can build and run without network credentials.
-    return buildMockReplies(input);
+    try {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
+          temperature: 0.55,
+          messages: [
+            {
+              role: "system",
+              content: buildSystemPrompt(),
+            },
+            {
+              role: "user",
+              content: JSON.stringify(buildPromptPayload(input)),
+            },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        const fallback = await new MockAIReplyProvider().generateReplies(input);
+        return {
+          ...fallback,
+          warning: `OpenAI request failed with status ${response.status}.`,
+        };
+      }
+
+      const data = (await response.json()) as OpenAIChatResponse;
+      const content = data.choices?.[0]?.message?.content ?? "";
+      const replies = parseReplyOptions(content);
+
+      if (replies.length === 3) {
+        return { replies, source: "openai" };
+      }
+
+      const fallback = await new MockAIReplyProvider().generateReplies(input);
+      return {
+        ...fallback,
+        warning: "OpenAI response did not contain three valid reply options.",
+      };
+    } catch (error) {
+      const fallback = await new MockAIReplyProvider().generateReplies(input);
+      return {
+        ...fallback,
+        warning:
+          error instanceof Error
+            ? `OpenAI request failed: ${error.message}`
+            : "OpenAI request failed.",
+      };
+    }
   }
 }
 
@@ -41,13 +106,117 @@ export function getAIReplyProvider(): AIReplyProvider {
     : new MockAIReplyProvider();
 }
 
+function buildSystemPrompt() {
+  return `${replyPromptGuidance}
+
+Return exactly 3 distinct reply options as a JSON array of strings.
+Do not include markdown, numbering, explanations, labels, or surrounding prose.
+Each reply must sound specific to the business, review content, rating and selected tone.
+Avoid fake placeholders, vague generic praise, and claims about actions the business has not taken.
+Keep wording suitable for a real UK business replying publicly to a customer review.`;
+}
+
+function buildPromptPayload(input: ReplyGenerationInput) {
+  const brand = input.brandVoiceSettings;
+
+  return {
+    business: {
+      name: input.businessName,
+      type: input.businessType,
+      location: input.location,
+    },
+    review: {
+      customerName: input.customerName ?? "Customer",
+      rating: input.starRating,
+      content: input.reviewText,
+    },
+    requestedReply: {
+      tone: input.tone,
+      length: input.replyLength,
+      language: "UK English",
+    },
+    brandVoice: brand
+      ? {
+          preferredTone: brand.preferredTone,
+          defaultLength: brand.defaultLength,
+          greetingStyle: brand.greetingStyle,
+          signOffStyle: brand.signOffStyle,
+          wordsToUse: brand.wordsToUse,
+          wordsToAvoid: brand.wordsToAvoid,
+          complaintHandlingStyle: brand.complaintHandlingStyle,
+          useEmojis: brand.useEmojis,
+          mentionBusinessName: brand.mentionBusinessName,
+          apologiseForPoorExperiences: brand.apologiseForPoorExperiences,
+          inviteUnhappyCustomersToContact:
+            brand.inviteUnhappyCustomersToContact,
+          keepRepliesShortByDefault: brand.keepRepliesShortByDefault,
+        }
+      : null,
+  };
+}
+
+function parseReplyOptions(content: string) {
+  const trimmed = content.trim();
+  const jsonText = trimmed
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/```$/i, "")
+    .trim();
+
+  try {
+    const parsed = JSON.parse(jsonText) as unknown;
+    const candidates = Array.isArray(parsed)
+      ? parsed
+      : parsed &&
+          typeof parsed === "object" &&
+          "replies" in parsed &&
+          Array.isArray((parsed as { replies: unknown }).replies)
+        ? (parsed as { replies: unknown[] }).replies
+        : [];
+    const cleaned = candidates
+      .filter((item): item is string => typeof item === "string")
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+    return distinctReplies(cleaned).slice(0, 3);
+  } catch {
+    return [];
+  }
+}
+
+function distinctReplies(replies: string[]) {
+  const seen = new Set<string>();
+  const distinct: string[] = [];
+
+  for (const reply of replies) {
+    const key = reply.toLowerCase().replace(/\s+/g, " ");
+    if (!seen.has(key)) {
+      seen.add(key);
+      distinct.push(reply);
+    }
+  }
+
+  return distinct;
+}
+
 export function buildMockReplies(input: ReplyGenerationInput) {
   const brand = input.brandVoiceSettings ?? {
-    ...defaultBrandVoice,
     businessName: input.businessName,
     businessType: input.businessType as BrandVoiceSettings["businessType"],
     location: input.location,
+    preferredTone: input.tone,
+    defaultLength: input.replyLength,
+    greetingStyle: "Use a polite greeting",
     signOffStyle: `Thanks, the ${input.businessName} team`,
+    wordsToUse: "",
+    wordsToAvoid: "",
+    complaintHandlingStyle:
+      "Acknowledge feedback, avoid arguing, and invite direct contact.",
+    useEmojis: false,
+    mentionBusinessName: true,
+    apologiseForPoorExperiences: true,
+    inviteUnhappyCustomersToContact: true,
+    keepRepliesShortByDefault: input.replyLength === "Short",
   };
   const firstName = input.customerName?.split(" ")[0] ?? "there";
   const isComplaint = input.starRating <= 3;

@@ -1,7 +1,7 @@
 # ReviewReply Pro
 
-Documentation Version: 0.2.0
-Last Updated: 2026-06-09 17:38 BST
+Documentation Version: 0.3.0
+Last Updated: 2026-06-09 17:57 BST
 Status: Implemented / In Progress / Planned aligned after documentation audit.
 
 ## Overview
@@ -65,12 +65,17 @@ Implemented:
 - Manual review entry.
 - Review inbox filtering by location, status, rating, search and newest/oldest sort.
 - Review detail workflow: generate, select, edit, save, copy, mark posted and archive.
+- Main review workflow uses OpenAI when `OPENAI_API_KEY` is configured.
+- Local reply fallback is retained for missing keys, OpenAI request failures and local development.
+- Generated replies store `generation_source` as `openai` or `fallback`.
+- Super Admin can see a small generation-source label on reply options.
 - Activity/audit records for review and reply workflow actions.
 - Location-level brand voice settings.
 - Dashboard KPIs including total reviews, awaiting response, responded to, average rating and response rate.
 - First-time business setup wizard.
 - Lead capture form and Super Admin lead management.
 - Google Business Profile readiness fields.
+- Authenticated dashboards and admin reporting use database-backed real pilot/customer data only.
 - Admin documentation area protected for Super Admin users.
 - Vercel production deployment.
 
@@ -102,7 +107,7 @@ Implemented:
 - SQLite for local development
 - Turso/libSQL for production through Prisma libSQL adapter
 - Google OAuth for admin authentication
-- OpenAI-compatible API route for reply generation
+- OpenAI-backed reply generation in the main review workflow
 - Local reply fallback when OpenAI is unavailable
 - Vercel deployment
 
@@ -205,17 +210,15 @@ Current build note:
 
 Implemented differently from a final SaaS:
 
-- The server action provider for review workflow generation currently uses the local fallback even when `OPENAI_API_KEY` is present.
-- The `/api/replies` route can call OpenAI directly, but the main review workflow currently uses the provider fallback path.
 - Stripe routes are placeholders and return mock/scaffolded responses.
 - Google Business Profile fields exist, but sync and posting are not implemented.
 - Some public demo pages still use static fictional sample data.
-- Admin overview still includes some legacy static demo/customer arrays alongside database-backed views.
+- Public demo data is separated from authenticated pilot/customer and Super Admin reporting.
 
 In Progress:
 
-- Replacing remaining static reporting surfaces with database-only reporting.
-- Aligning AI generation paths so the main workflow uses the real OpenAI call when configured.
+- Pilot onboarding workflow refinement.
+- Production migration/runbook documentation.
 
 Planned:
 
@@ -228,8 +231,6 @@ Planned:
 
 Next priorities:
 
-- Make the OpenAI provider path call OpenAI from the server action workflow.
-- Convert admin overview metrics to database-only reporting.
 - Add automated workflow tests for login redirects, review generation, copy/post/archive and lead capture.
 - Add safer customer conversion tooling from lead to pilot/customer.
 
@@ -256,8 +257,8 @@ Outdated docs:
 Docs requiring review:
 
 - Billing docs after Stripe is implemented.
-- AI generation docs after the server action provider calls OpenAI directly.
-- Admin reporting docs after legacy static reporting is removed.
+- AI generation docs after provider observability or model routing changes.
+- Admin reporting docs after the next reporting feature ships.
 
 ## Documentation
 
