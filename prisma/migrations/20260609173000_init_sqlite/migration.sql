@@ -45,7 +45,7 @@ CREATE TABLE "Location" (
     "googleRating" REAL,
     "googleReviewCount" INTEGER,
     "priceRange" TEXT,
-    "googleBusinessStatus" TEXT NOT NULL DEFAULT 'Mock connected for now',
+    "googleBusinessStatus" TEXT NOT NULL DEFAULT 'Google Business Profile integration coming soon',
     CONSTRAINT "Location_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -53,6 +53,7 @@ CREATE TABLE "Location" (
 CREATE TABLE "BrandVoiceSetting" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "workspaceId" TEXT NOT NULL,
+    "location_id" TEXT,
     "preferredTone" TEXT NOT NULL,
     "defaultLength" TEXT NOT NULL,
     "greetingStyle" TEXT,
@@ -65,7 +66,8 @@ CREATE TABLE "BrandVoiceSetting" (
     "apologiseForPoorExperiences" BOOLEAN NOT NULL DEFAULT true,
     "inviteUnhappyCustomersToContact" BOOLEAN NOT NULL DEFAULT true,
     "keepRepliesShortByDefault" BOOLEAN NOT NULL DEFAULT false,
-    CONSTRAINT "BrandVoiceSetting_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "BrandVoiceSetting_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "BrandVoiceSetting_location_id_fkey" FOREIGN KEY ("location_id") REFERENCES "Location" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -79,6 +81,13 @@ CREATE TABLE "Review" (
     "status" TEXT NOT NULL,
     "sentiment" TEXT NOT NULL,
     "receivedAt" DATETIME NOT NULL,
+    "selected_reply_id" TEXT,
+    "edited_reply" TEXT,
+    "last_edited_at" DATETIME,
+    "copied_at" DATETIME,
+    "posted_at" DATETIME,
+    "archived_at" DATETIME,
+    "actioned_by_email" TEXT,
     CONSTRAINT "Review_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "Location" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -92,6 +101,7 @@ CREATE TABLE "GeneratedReply" (
     "body" TEXT NOT NULL,
     "selected" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "GeneratedReply_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "Review" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -162,7 +172,10 @@ CREATE UNIQUE INDEX "admin_users_email_key" ON "admin_users"("email");
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "BrandVoiceSetting_workspaceId_key" ON "BrandVoiceSetting"("workspaceId");
+CREATE UNIQUE INDEX "BrandVoiceSetting_location_id_key" ON "BrandVoiceSetting"("location_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "BrandVoiceSetting_workspaceId_location_id_key" ON "BrandVoiceSetting"("workspaceId", "location_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "GoogleBusinessConnection_workspaceId_key" ON "GoogleBusinessConnection"("workspaceId");

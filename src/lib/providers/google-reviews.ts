@@ -13,7 +13,7 @@ export class MockGoogleReviewsProvider implements GoogleReviewsProvider {
     return {
       connected: true,
       message:
-        "Mock Google Business Profile connected for local development.",
+        "Demo Google-style reviews. Manual review entry is active now.",
     };
   }
 

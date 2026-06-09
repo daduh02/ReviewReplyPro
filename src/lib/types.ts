@@ -120,7 +120,7 @@ export type GoogleBusinessLocation = {
   status:
     | "Demo Google-style reviews"
     | "Google Business Profile connection coming next"
-    | "Mock connected for now";
+    | "Google Business Profile integration coming soon";
   plan?: "Demo Free" | "Pilot" | "Free for Life";
   billingStatus?: "mock billing" | "permanently free" | "exempt";
   pilotStatus?: "demo" | "active";
@@ -129,7 +129,7 @@ export type GoogleBusinessLocation = {
   gbpConnectionStatus?:
     | "demo reviews"
     | "connection coming next"
-    | "mock connected for now";
+    | "Google Business Profile integration coming soon";
 };
 
 export type CustomerAccount = {

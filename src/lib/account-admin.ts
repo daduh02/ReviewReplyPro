@@ -125,49 +125,118 @@ export async function ensurePilotCustomerAccounts() {
           googleBusinessStatus: location.status,
         },
       });
-    }
 
-    const firstLocation = account.locations[0];
-
-    if (firstLocation) {
       await db.brandVoiceSetting.upsert({
-        where: { workspaceId: workspace.id },
+        where: { locationId: location.id },
         update: {
-          preferredTone: firstLocation.brandVoice.preferredTone,
-          defaultLength: firstLocation.brandVoice.defaultLength,
-          greetingStyle: firstLocation.brandVoice.greetingStyle,
-          signOffStyle: firstLocation.brandVoice.signOffStyle,
-          wordsToUse: firstLocation.brandVoice.wordsToUse,
-          wordsToAvoid: firstLocation.brandVoice.wordsToAvoid,
-          complaintHandlingStyle: firstLocation.brandVoice.complaintHandlingStyle,
-          useEmojis: firstLocation.brandVoice.useEmojis,
-          mentionBusinessName: firstLocation.brandVoice.mentionBusinessName,
+          workspaceId: workspace.id,
+          preferredTone: location.brandVoice.preferredTone,
+          defaultLength: location.brandVoice.defaultLength,
+          greetingStyle: location.brandVoice.greetingStyle,
+          signOffStyle: location.brandVoice.signOffStyle,
+          wordsToUse: location.brandVoice.wordsToUse,
+          wordsToAvoid: location.brandVoice.wordsToAvoid,
+          complaintHandlingStyle: location.brandVoice.complaintHandlingStyle,
+          useEmojis: location.brandVoice.useEmojis,
+          mentionBusinessName: location.brandVoice.mentionBusinessName,
           apologiseForPoorExperiences:
-            firstLocation.brandVoice.apologiseForPoorExperiences,
+            location.brandVoice.apologiseForPoorExperiences,
           inviteUnhappyCustomersToContact:
-            firstLocation.brandVoice.inviteUnhappyCustomersToContact,
+            location.brandVoice.inviteUnhappyCustomersToContact,
           keepRepliesShortByDefault:
-            firstLocation.brandVoice.keepRepliesShortByDefault,
+            location.brandVoice.keepRepliesShortByDefault,
         },
         create: {
           workspaceId: workspace.id,
-          preferredTone: firstLocation.brandVoice.preferredTone,
-          defaultLength: firstLocation.brandVoice.defaultLength,
-          greetingStyle: firstLocation.brandVoice.greetingStyle,
-          signOffStyle: firstLocation.brandVoice.signOffStyle,
-          wordsToUse: firstLocation.brandVoice.wordsToUse,
-          wordsToAvoid: firstLocation.brandVoice.wordsToAvoid,
-          complaintHandlingStyle: firstLocation.brandVoice.complaintHandlingStyle,
-          useEmojis: firstLocation.brandVoice.useEmojis,
-          mentionBusinessName: firstLocation.brandVoice.mentionBusinessName,
+          locationId: location.id,
+          preferredTone: location.brandVoice.preferredTone,
+          defaultLength: location.brandVoice.defaultLength,
+          greetingStyle: location.brandVoice.greetingStyle,
+          signOffStyle: location.brandVoice.signOffStyle,
+          wordsToUse: location.brandVoice.wordsToUse,
+          wordsToAvoid: location.brandVoice.wordsToAvoid,
+          complaintHandlingStyle: location.brandVoice.complaintHandlingStyle,
+          useEmojis: location.brandVoice.useEmojis,
+          mentionBusinessName: location.brandVoice.mentionBusinessName,
           apologiseForPoorExperiences:
-            firstLocation.brandVoice.apologiseForPoorExperiences,
+            location.brandVoice.apologiseForPoorExperiences,
           inviteUnhappyCustomersToContact:
-            firstLocation.brandVoice.inviteUnhappyCustomersToContact,
+            location.brandVoice.inviteUnhappyCustomersToContact,
           keepRepliesShortByDefault:
-            firstLocation.brandVoice.keepRepliesShortByDefault,
+            location.brandVoice.keepRepliesShortByDefault,
         },
       });
+    }
+
+    for (const review of account.reviews) {
+      const location = account.locations.find(
+        (item) =>
+          item.businessName === review.businessName &&
+          item.location === review.location,
+      );
+
+      if (!location) {
+        continue;
+      }
+
+      await db.review.upsert({
+        where: { id: review.id },
+        update: {
+          locationId: location.id,
+          customerName: review.customerName,
+          starRating: review.rating,
+          reviewText: review.reviewText,
+          source: review.source,
+          status: review.status,
+          sentiment: review.sentiment,
+          receivedAt: new Date(review.dateReceived),
+        },
+        create: {
+          id: review.id,
+          locationId: location.id,
+          customerName: review.customerName,
+          starRating: review.rating,
+          reviewText: review.reviewText,
+          source: review.source,
+          status: review.status,
+          sentiment: review.sentiment,
+          receivedAt: new Date(review.dateReceived),
+        },
+      });
+
+      for (const [index, reply] of review.draftReplies.entries()) {
+        const id = `${review.id}_reply_${index + 1}`;
+        await db.generatedReply.upsert({
+          where: { id },
+          update: {
+            reviewId: review.id,
+            variant: index + 1,
+            tone: review.sentiment === "Complaint" ? "Empathetic" : "Friendly",
+            length: "Standard",
+            body: reply,
+            selected: index === 0,
+          },
+          create: {
+            id,
+            reviewId: review.id,
+            variant: index + 1,
+            tone: review.sentiment === "Complaint" ? "Empathetic" : "Friendly",
+            length: "Standard",
+            body: reply,
+            selected: index === 0,
+          },
+        });
+      }
+
+      if (review.draftReplies[0]) {
+        await db.review.update({
+          where: { id: review.id },
+          data: {
+            selectedReplyId: `${review.id}_reply_1`,
+            editedReply: review.draftReplies[0],
+          },
+        });
+      }
     }
   }
 }

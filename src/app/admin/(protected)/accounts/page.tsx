@@ -175,7 +175,16 @@ async function removeAccount(formData: FormData) {
     redirect("/admin/accounts");
   }
 
+  const locationIds = account.locations.map((location) => location.id);
+  const reviews = await db.review.findMany({
+    where: { locationId: { in: locationIds } },
+    select: { id: true },
+  });
+  const reviewIds = reviews.map((review) => review.id);
+
   await db.savedReply.deleteMany({ where: { workspaceId: id } });
+  await db.generatedReply.deleteMany({ where: { reviewId: { in: reviewIds } } });
+  await db.review.deleteMany({ where: { id: { in: reviewIds } } });
   await db.usageEvent.deleteMany({ where: { workspaceId: id } });
   await db.integration.deleteMany({ where: { workspaceId: id } });
   await db.googleBusinessConnection.deleteMany({ where: { workspaceId: id } });
@@ -214,7 +223,8 @@ async function addLocation(formData: FormData) {
       googleReviewCount: optionalNumber(formData, "googleReviewCount"),
       priceRange: optionalValue(formData, "priceRange"),
       googleBusinessStatus:
-        value(formData, "googleBusinessStatus") || "Mock connected for now",
+        value(formData, "googleBusinessStatus") ||
+        "Google Business Profile integration coming soon",
     },
   });
 
@@ -248,7 +258,8 @@ async function updateLocation(formData: FormData) {
       googleReviewCount: optionalNumber(formData, "googleReviewCount"),
       priceRange: optionalValue(formData, "priceRange"),
       googleBusinessStatus:
-        value(formData, "googleBusinessStatus") || "Mock connected for now",
+        value(formData, "googleBusinessStatus") ||
+        "Google Business Profile integration coming soon",
     },
   });
 
@@ -272,6 +283,12 @@ async function removeLocation(formData: FormData) {
     redirect("/admin/accounts");
   }
 
+  const reviewIds = location.reviews.map((review) => review.id);
+
+  await db.savedReply.deleteMany({ where: { reviewId: { in: reviewIds } } });
+  await db.generatedReply.deleteMany({ where: { reviewId: { in: reviewIds } } });
+  await db.review.deleteMany({ where: { id: { in: reviewIds } } });
+  await db.brandVoiceSetting.deleteMany({ where: { locationId: id } });
   await db.location.delete({ where: { id } });
 
   revalidatePath("/admin/accounts");
@@ -566,7 +583,7 @@ export default async function AdminAccountsPage() {
                   <TextInput
                     name="googleBusinessStatus"
                     label="GBP status"
-                    defaultValue="Mock connected for now"
+                    defaultValue="Google Business Profile integration coming soon"
                   />
                   <button className="self-end rounded-lg bg-slate-950 px-4 py-2 text-sm font-semibold text-white lg:col-span-2">
                     Add location

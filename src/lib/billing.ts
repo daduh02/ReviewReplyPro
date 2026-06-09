@@ -34,7 +34,7 @@ export const plans: Plan[] = [
       "Google Business Profile sync, auto-drafted replies, and higher usage.",
     monthlyReplies: 500,
     features: [
-      "Mock Google Business Profile sync",
+      "Google Business Profile integration coming soon",
       "Auto-drafted replies for imported reviews",
       "Higher monthly usage",
       "Multi-location-ready foundation",
