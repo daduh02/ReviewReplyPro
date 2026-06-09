@@ -57,8 +57,27 @@ export function buildMockReplies(input: ReplyGenerationInput) {
   const isRestaurant =
     input.businessType.toLowerCase().includes("restaurant") ||
     input.businessType.toLowerCase().includes("takeaway");
+  const isCommunity =
+    input.businessType.toLowerCase().includes("mosque") ||
+    input.businessType.toLowerCase().includes("community");
   const signOff =
     brand.signOffStyle || `Thanks from the ${input.businessName} team`;
+
+  if (isCommunity && isComplaint) {
+    return [
+      `Dear ${firstName}, thank you for letting us know. We are sorry your experience at ${input.businessName} was disappointing. Please contact the masjid directly so we can understand what happened and improve this for the community. ${signOff}.`,
+      `Thank you ${firstName}, we appreciate you raising this with us. Clear information and a welcoming environment matter, and we would welcome the chance to speak with you directly. ${signOff}.`,
+      `Dear ${firstName}, we are sorry to hear this affected your visit. Please get in touch with the masjid so the team can look into the details properly and respond with care.`,
+    ];
+  }
+
+  if (isCommunity) {
+    return [
+      `Thank you ${firstName}, we really appreciate your kind words. It is lovely to hear that ${input.businessName} feels welcoming and helpful for the community. ${signOff}.`,
+      `Dear ${firstName}, thank you for taking the time to leave such thoughtful feedback. We are grateful for your support and pleased the masjid has been a positive place for you.`,
+      `Thank you ${firstName}. Your feedback means a great deal to the volunteers and the wider community. We are grateful for your support. ${signOff}.`,
+    ];
+  }
 
   if (isLegal && isComplaint) {
     return [
@@ -105,5 +124,6 @@ export const replyPromptGuidance = `
 Write in British English for a UK local business. For complaints, be polite,
 acknowledge the issue, avoid arguing, avoid admitting legal liability, invite
 the customer to contact the business directly, and keep the tone professional
-and calm.
+and calm. For mosque or community organisation reviews, use respectful, warm
+community wording and avoid sounding too corporate.
 `;

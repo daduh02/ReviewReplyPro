@@ -135,8 +135,8 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
             </select>
           </label>
           <div className="rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm leading-6 text-blue-950">
-            Demo mode uses fictional UK businesses only, so screenshots and
-            public examples never display real trading names.
+            Demo mode includes fictional UK examples plus active pilot accounts.
+            Pilot billing and Google connection status are shown on location cards.
           </div>
         </div>
 
@@ -166,11 +166,16 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
             <span>Actions</span>
           </div>
           <div className="divide-y divide-slate-200">
-            {visibleReviews.map((review) => (
-              <article
-                key={review.id}
-                className="grid gap-4 p-4 lg:grid-cols-[1.1fr_0.7fr_0.8fr_0.8fr_1.4fr_1fr] lg:items-center"
-              >
+            {visibleReviews.map((review) => {
+              const location = locations.find(
+                (item) => getLocationKey(item) === getLocationKey(review),
+              );
+
+              return (
+                <article
+                  key={review.id}
+                  className="grid gap-4 p-4 lg:grid-cols-[1.1fr_0.7fr_0.8fr_0.8fr_1.4fr_1fr] lg:items-center"
+                >
                 <div>
                   <div className="flex items-center justify-between gap-3">
                     <p className="font-semibold text-slate-950">{review.customerName}</p>
@@ -184,7 +189,10 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
                   </p>
                 </div>
                 <p className="text-sm font-medium text-slate-700">
-                  {review.businessName}
+                  <span className="flex flex-wrap items-center gap-2">
+                    {review.businessName}
+                    {location?.plan === "Free for Life" ? <FreeForLifeBadge /> : null}
+                  </span>
                   <span className="block text-xs text-slate-500">
                     {review.location}
                     {review.address ? ` · ${review.address}` : ""}
@@ -258,8 +266,9 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
                     <Archive className="size-4" />
                   </button>
                 </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -356,7 +365,10 @@ export function ReviewDetail({ review }: { review?: Review }) {
               {activeReview.customerName}
             </h2>
           </div>
-          <StatusBadge status={activeReview.status} />
+          <div className="flex flex-wrap items-center gap-2">
+            {location?.plan === "Free for Life" ? <FreeForLifeBadge /> : null}
+            <StatusBadge status={activeReview.status} />
+          </div>
         </div>
         <div className="mt-4 flex items-center gap-3">
           <ReviewStars rating={activeReview.rating} />
@@ -371,6 +383,11 @@ export function ReviewDetail({ review }: { review?: Review }) {
             <dd className="mt-1 text-slate-600">
               {activeReview.businessName}, {activeReview.location}
             </dd>
+            {location?.plan === "Free for Life" ? (
+              <dd className="mt-2">
+                <FreeForLifeBadge />
+              </dd>
+            ) : null}
             {activeReview.address ? (
               <dd className="mt-1 text-slate-500">{activeReview.address}</dd>
             ) : null}
@@ -387,6 +404,20 @@ export function ReviewDetail({ review }: { review?: Review }) {
                     activeReview.googleReviewCount
                   } reviews`
                 : "Fictional demo profile"}
+            </dd>
+          </div>
+          <div>
+            <dt className="font-semibold text-slate-950">Pilot access</dt>
+            <dd className="mt-1 text-slate-600">
+              {location?.pilotStatus === "active"
+                ? "Active pilot · permanently free"
+                : "Demo account"}
+            </dd>
+          </div>
+          <div>
+            <dt className="font-semibold text-slate-950">Google connection</dt>
+            <dd className="mt-1 text-slate-600">
+              {location?.gbpConnectionStatus ?? "Demo Google-style reviews"}
             </dd>
           </div>
           <div>
@@ -526,5 +557,13 @@ export function ReviewDetail({ review }: { review?: Review }) {
         </div>
       </section>
     </div>
+  );
+}
+
+function FreeForLifeBadge() {
+  return (
+    <span className="inline-flex w-fit rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">
+      Free for Life
+    </span>
   );
 }

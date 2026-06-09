@@ -23,6 +23,7 @@ export type BusinessType =
   | "Restaurant"
   | "Takeaway"
   | "Takeaway / Restaurant"
+  | "Mosque / community organisation"
   | "Garage"
   | "Trade"
   | "Estate agent"
@@ -106,7 +107,17 @@ export type GoogleBusinessLocation = {
   googleRating?: number;
   googleReviewCount?: number;
   priceRange?: string;
-  status: "Demo Google-style reviews" | "Google Business Profile connection coming next";
+  status:
+    | "Demo Google-style reviews"
+    | "Google Business Profile connection coming next"
+    | "Mock connected for now";
+  plan?: "Demo Free" | "Free for Life";
+  billingStatus?: "mock billing" | "permanently free";
+  pilotStatus?: "demo" | "active";
+  gbpConnectionStatus?:
+    | "demo reviews"
+    | "connection coming next"
+    | "mock connected for now";
 };
 
 export type Plan = {

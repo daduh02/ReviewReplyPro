@@ -47,6 +47,11 @@ export function IntegrationsPanel() {
           {mockLocations.map((location) => (
             <div key={location.id} className="rounded-lg border border-slate-200 p-4">
               <p className="font-semibold text-slate-950">{location.businessName}</p>
+              {location.plan === "Free for Life" ? (
+                <span className="mt-2 inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">
+                  Free for Life
+                </span>
+              ) : null}
               <p className="mt-1 text-sm font-medium text-blue-700">
                 {location.location}
               </p>
@@ -63,6 +68,11 @@ export function IntegrationsPanel() {
               <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-blue-700">
                 {location.status}
               </p>
+              {location.pilotStatus === "active" ? (
+                <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-emerald-700">
+                  Active pilot · {location.billingStatus}
+                </p>
+              ) : null}
             </div>
           ))}
         </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
+  type DemoLocation,
   demoLocations,
   demoReviews,
   savedReplies as demoSavedReplies,
@@ -18,7 +19,7 @@ import type {
 type PilotState = {
   workspaces: Workspace[];
   businesses: Business[];
-  locations: typeof demoLocations;
+  locations: DemoLocation[];
   reviews: Review[];
   savedReplies: SavedReply[];
   brandVoices: Record<string, BrandVoiceSettings>;
@@ -57,7 +58,7 @@ function readState(): PilotState {
       return createInitialState();
     }
 
-    return { ...createInitialState(), ...JSON.parse(stored) } as PilotState;
+    return mergeWithInitialState(JSON.parse(stored) as Partial<PilotState>);
   } catch {
     return createInitialState();
   }
@@ -65,6 +66,30 @@ function readState(): PilotState {
 
 function writeState(state: PilotState) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function mergeById<T extends { id: string }>(seeded: T[], stored: T[] = []) {
+  const storedIds = new Set(stored.map((item) => item.id));
+  return [...stored, ...seeded.filter((item) => !storedIds.has(item.id))];
+}
+
+function mergeWithInitialState(stored: Partial<PilotState>): PilotState {
+  const initial = createInitialState();
+  const locations = mergeById(initial.locations, stored.locations);
+
+  return {
+    workspaces: mergeById(initial.workspaces, stored.workspaces),
+    businesses: mergeById(initial.businesses, stored.businesses),
+    locations,
+    reviews: mergeById(initial.reviews, stored.reviews),
+    savedReplies: mergeById(initial.savedReplies, stored.savedReplies),
+    brandVoices: {
+      ...Object.fromEntries(
+        locations.map((location) => [location.id, location.brandVoice]),
+      ),
+      ...stored.brandVoices,
+    },
+  };
 }
 
 export function getLocationKey(review: Pick<Review, "businessName" | "location">) {

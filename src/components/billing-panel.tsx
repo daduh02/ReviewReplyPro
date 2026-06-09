@@ -1,7 +1,15 @@
-import { CreditCard, TrendingUp } from "lucide-react";
+"use client";
+
+import { CreditCard, Gift, TrendingUp } from "lucide-react";
 import { plans } from "@/lib/billing";
+import { usePilotStore } from "@/lib/pilot-store";
 
 export function BillingPanel() {
+  const store = usePilotStore();
+  const freeForLifeLocations = store.locations.filter(
+    (location) => location.plan === "Free for Life",
+  );
+
   return (
     <div className="space-y-6">
       <section className="grid gap-4 md:grid-cols-3">
@@ -11,7 +19,7 @@ export function BillingPanel() {
             Demo Free
           </p>
           <p className="mt-2 text-sm text-slate-600">
-            Fictional demo workspace with mocked billing
+            Demo workspace with active pilot billing records
           </p>
         </div>
         <div className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
@@ -25,10 +33,66 @@ export function BillingPanel() {
             <p className="font-semibold">Demo billing paused</p>
           </div>
           <p className="mt-3 text-sm leading-6 text-blue-50">
-            Demo mode uses fictional businesses and local-safe billing placeholders.
+            Free for Life pilot accounts are permanently free and do not require
+            Stripe checkout.
           </p>
         </div>
       </section>
+      {freeForLifeLocations.length ? (
+        <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
+          <div className="flex items-center gap-3">
+            <Gift className="size-5 text-emerald-600" />
+            <h2 className="text-2xl font-semibold text-slate-950">
+              Free for Life pilot accounts
+            </h2>
+          </div>
+          <div className="mt-5 grid gap-4 lg:grid-cols-2">
+            {freeForLifeLocations.map((location) => (
+              <article
+                key={location.id}
+                className="rounded-lg border border-emerald-200 bg-emerald-50/40 p-4"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h3 className="font-semibold text-slate-950">
+                      {location.businessName}
+                    </h3>
+                    <p className="mt-1 text-sm text-slate-600">
+                      {location.location}
+                    </p>
+                  </div>
+                  <span className="inline-flex rounded-full bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white">
+                    Free for Life
+                  </span>
+                </div>
+                <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
+                  <div>
+                    <dt className="font-semibold text-slate-950">Billing status</dt>
+                    <dd className="text-slate-600">{location.billingStatus}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-semibold text-slate-950">Pilot status</dt>
+                    <dd className="text-slate-600">{location.pilotStatus}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-semibold text-slate-950">GBP status</dt>
+                    <dd className="text-slate-600">
+                      {location.gbpConnectionStatus}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="font-semibold text-slate-950">Reviews</dt>
+                    <dd className="text-slate-600">
+                      Google {location.googleRating?.toFixed(1)} ·{" "}
+                      {location.googleReviewCount} reviews
+                    </dd>
+                  </div>
+                </dl>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
       <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
