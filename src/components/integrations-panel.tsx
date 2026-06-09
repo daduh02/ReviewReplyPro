@@ -55,7 +55,19 @@ export function IntegrationsPanel() {
           {mockLocations.map((location) => (
             <div key={location.id} className="rounded-lg border border-slate-200 p-4">
               <p className="font-semibold text-slate-950">{location.businessName}</p>
+              <p className="mt-1 text-sm font-medium text-blue-700">
+                {location.location}
+              </p>
               <p className="mt-2 text-sm leading-6 text-slate-600">{location.address}</p>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                {location.phone}
+                {location.website ? ` · ${location.website}` : ""}
+              </p>
+              <p className="mt-2 text-sm font-semibold text-slate-700">
+                Google {location.googleRating?.toFixed(1)} ·{" "}
+                {location.googleReviewCount} reviews
+                {location.priceRange ? ` · ${location.priceRange}` : ""}
+              </p>
               <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-blue-700">
                 {location.status}
               </p>

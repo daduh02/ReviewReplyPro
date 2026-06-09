@@ -11,6 +11,8 @@ const businessTypes = [
   "Dentists",
   "Restaurants",
   "Takeaways",
+  "Solicitors",
+  "Professional services",
   "Garages",
   "Trades",
   "Estate agents",
@@ -19,7 +21,8 @@ const businessTypes = [
 
 export default function Home() {
   const fiveStar = demoReviews[0];
-  const complaint = demoReviews[1];
+  const complaint =
+    demoReviews.find((review) => review.rating === 1) ?? demoReviews[2];
 
   return (
     <>

@@ -13,7 +13,7 @@ export default function LoginPage() {
           </h1>
           <p className="mt-3 text-sm leading-6 text-slate-600">
             Authentication is scaffolded for the MVP. Continue into the demo
-            workspace as Glow Salon Leeds.
+            workspace as Ashpazi or Gardner Champion Solicitors.
           </p>
           <div className="mt-5 space-y-4">
             <input className="w-full rounded-lg border border-slate-200 px-3 py-2" placeholder="you@example.co.uk" />

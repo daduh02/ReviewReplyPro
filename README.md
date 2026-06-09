@@ -55,6 +55,13 @@ Add real Stripe SDK calls inside `createCheckoutSession`, configure `STRIPE_STAR
 
 Add an OpenAI SDK call inside `OpenAIReplyProvider`. Prompts should keep British English, follow the brand voice settings, and handle complaints calmly without admitting legal liability.
 
-## Demo businesses
+## Pilot businesses
 
-The seed-style demo data includes Glow Salon Leeds, Smile Studio Manchester, Bradford Auto Repairs, The Curry House Birmingham, North Leeds Estate Agents, and Yorkshire Plumbing Co.
+The seed-style demo data prioritises real pilot businesses:
+
+- Ashpazi - Charcoal Kitchen, Batley
+- Gardner Champion Solicitors Ltd, Dewsbury
+- Gardner Champion Solicitors Ltd, Rugeley
+
+Gardner Champion Solicitors Ltd is represented as one business/workspace with
+two separate locations, so the Review Inbox can demonstrate location filtering.

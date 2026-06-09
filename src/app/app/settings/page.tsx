@@ -9,14 +9,14 @@ export default function SettingsPage() {
         <label className="text-sm font-semibold text-slate-700">
           Workspace name
           <input
-            defaultValue="Glow Salon Leeds"
+            defaultValue="Pilot businesses"
             className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2"
           />
         </label>
         <label className="text-sm font-semibold text-slate-700">
           Reply notification email
           <input
-            defaultValue="owner@glowsalonleeds.co.uk"
+            defaultValue="pilot@reviewreplypro.co.uk"
             className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2"
           />
         </label>

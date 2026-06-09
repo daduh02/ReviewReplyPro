@@ -19,8 +19,12 @@ export function SavedRepliesBoard() {
         const matchesFilter =
           filter === "All" ||
           reply.sentiment === filter ||
+          (filter === "Negative" && reply.sentiment === "Complaint") ||
           (filter === "Complaints" && reply.sentiment === "Complaint") ||
-          (filter === "5-Star" && reply.originalReviewSnippet.includes("brilliant"));
+          (filter === "5-Star" &&
+            /(excellent|professional|fresh|recommend)/i.test(
+              reply.originalReviewSnippet,
+            ));
         return matchesSearch && matchesFilter;
       }),
     [filter, query],

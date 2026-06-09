@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { defaultBrandVoice } from "@/lib/demo-data";
+import { defaultBrandVoice, pilotLocations } from "@/lib/demo-data";
 import type { BrandVoiceSettings, ReplyLength, Tone } from "@/lib/types";
 
 export function BrandVoiceForm() {
   const [settings, setSettings] =
     useState<BrandVoiceSettings>(defaultBrandVoice);
+  const [selectedLocation, setSelectedLocation] = useState(pilotLocations[0].id);
 
   function update<K extends keyof BrandVoiceSettings>(
     key: K,
@@ -20,8 +21,31 @@ export function BrandVoiceForm() {
       <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
         <h2 className="text-2xl font-semibold text-slate-950">Brand Voice</h2>
         <p className="mt-2 text-sm leading-6 text-slate-600">
-          Set the defaults used when ReviewReply Pro prepares reply drafts.
+          Set the defaults used when ReviewReply Pro prepares reply drafts for
+          each pilot business location.
         </p>
+        <label className="mt-5 block text-sm font-semibold text-slate-700">
+          Pilot business/location
+          <select
+            value={selectedLocation}
+            onChange={(event) => {
+              const next = pilotLocations.find(
+                (location) => location.id === event.target.value,
+              );
+              setSelectedLocation(event.target.value);
+              if (next) {
+                setSettings(next.brandVoice);
+              }
+            }}
+            className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2"
+          >
+            {pilotLocations.map((location) => (
+              <option key={location.id} value={location.id}>
+                {location.businessName} — {location.location}
+              </option>
+            ))}
+          </select>
+        </label>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <TextField label="Business name" value={settings.businessName} onChange={(value) => update("businessName", value)} />
           <TextField label="Business type" value={settings.businessType} onChange={(value) => update("businessType", value as BrandVoiceSettings["businessType"])} />
@@ -71,26 +95,17 @@ export function BrandVoiceForm() {
       <aside className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
         <h2 className="text-xl font-semibold text-slate-950">Live preview</h2>
         <p className="mt-2 text-sm leading-6 text-slate-600">
-          This is how a reply for {settings.businessName} could read.
+          This is how a reply for {settings.businessName} in {settings.location} could read.
         </p>
         <div className="mt-5 rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm leading-7 text-blue-950">
-          Hi Sarah, thank you for your lovely review. We are delighted you had
-          a great experience with {settings.mentionBusinessName ? ` ${settings.businessName}` : " us"}
-          {settings.location ? ` in ${settings.location}` : ""}.{" "}
-          {settings.defaultLength !== "Short"
-            ? "The team really appreciates your kind words and recommendation. "
-            : ""}
-          {settings.signOffStyle}.
+          {settings.businessType.includes("Solicitors")
+            ? `Dear Farah, thank you for your kind review. We are pleased to hear that everything was explained clearly and that you felt well supported. ${settings.signOffStyle}.`
+            : `Hi Amina, thank you for your lovely review. We are delighted you enjoyed the fresh food and charcoal grill at ${settings.businessName} in ${settings.location}. ${settings.signOffStyle}.`}
         </div>
         <div className="mt-5 rounded-lg border border-amber-100 bg-amber-50 p-4 text-sm leading-7 text-amber-950">
-          Hi James, thank you for raising this.{" "}
-          {settings.apologiseForPoorExperiences
-            ? "We are sorry to hear your experience did not meet expectations. "
-            : "We appreciate you sharing your experience. "}
-          We would like to look into this calmly.{" "}
-          {settings.inviteUnhappyCustomersToContact
-            ? `Please contact ${settings.businessName} directly so the team can review the details.`
-            : ""}
+          {settings.businessType.includes("Solicitors")
+            ? `Dear Lee, thank you for your feedback. We are sorry to hear that communication did not meet your expectations. To avoid discussing details publicly, please contact the ${settings.location} office directly so your concerns can be reviewed appropriately. ${settings.signOffStyle}.`
+            : `Hi Sam, thank you for letting us know. We are sorry your delivery took longer than expected and that an item was missing. Please contact the restaurant directly with your order details so we can look into this for you. ${settings.signOffStyle}.`}
         </div>
       </aside>
     </div>

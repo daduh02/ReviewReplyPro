@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { pilotLocations } from "@/lib/demo-data";
 import { buildMockReplies } from "@/lib/providers/ai";
 import type { ReplyLength, Review, ReviewStatus, Tone } from "@/lib/types";
 import { ReviewStars } from "@/components/review-stars";
@@ -28,11 +29,18 @@ const statuses: ReviewStatus[] = [
 export function ReviewInbox({ reviews }: { reviews: Review[] }) {
   const [items, setItems] = useState(reviews);
   const [filter, setFilter] = useState<ReviewStatus | "All">("All");
+  const [locationFilter, setLocationFilter] = useState("All locations");
 
-  const visibleReviews = useMemo(
-    () => items.filter((review) => filter === "All" || review.status === filter),
-    [filter, items],
-  );
+  const visibleReviews = useMemo(() => {
+    return items.filter((review) => {
+      const statusMatches = filter === "All" || review.status === filter;
+      const locationMatches =
+        locationFilter === "All locations" ||
+        `${review.businessName} — ${review.location}` === locationFilter;
+
+      return statusMatches && locationMatches;
+    });
+  }, [filter, items, locationFilter]);
 
   function updateStatus(id: string, status: ReviewStatus) {
     setItems((current) =>
@@ -67,10 +75,13 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
     <div className="space-y-6">
       <section className="grid gap-4 md:grid-cols-4">
         {[
-          ["Reviews imported", items.length],
-          ["Drafts ready", items.filter((item) => item.status === "Draft ready").length],
-          ["Copied", items.filter((item) => item.status === "Copied").length],
-          ["Posted", items.filter((item) => item.status === "Posted").length],
+          ["Visible reviews", visibleReviews.length],
+          ["Pilot locations", pilotLocations.length],
+          [
+            "Drafts ready",
+            visibleReviews.filter((item) => item.status === "Draft ready").length,
+          ],
+          ["Posted", visibleReviews.filter((item) => item.status === "Posted").length],
         ].map(([label, value]) => (
           <div key={label} className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
             <p className="text-sm font-medium text-slate-500">{label}</p>
@@ -84,7 +95,7 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Review Inbox</h2>
             <p className="mt-1 text-sm text-slate-600">
-              Mock Google reviews are imported here and prepared as reply drafts.
+              Pilot Google reviews are imported here and prepared as reply drafts.
             </p>
           </div>
           <Link
@@ -93,6 +104,28 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
           >
             Add review manually
           </Link>
+        </div>
+
+        <div className="mt-5 grid gap-3 lg:grid-cols-[1fr_1fr]">
+          <label className="text-sm font-semibold text-slate-700">
+            Business/location switcher
+            <select
+              value={locationFilter}
+              onChange={(event) => setLocationFilter(event.target.value)}
+              className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+            >
+              <option>All locations</option>
+              {pilotLocations.map((location) => (
+                <option key={location.id}>
+                  {location.businessName} — {location.location}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm leading-6 text-blue-950">
+            Gardner Champion Solicitors Ltd is treated as one business with two
+            separate locations: Dewsbury and Rugeley.
+          </div>
         </div>
 
         <div className="mt-5 flex gap-2 overflow-x-auto pb-2">
@@ -140,7 +173,18 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
                 </div>
                 <p className="text-sm font-medium text-slate-700">
                   {review.businessName}
-                  <span className="block text-xs text-slate-500">{review.location}</span>
+                  <span className="block text-xs text-slate-500">
+                    {review.location}
+                    {review.address ? ` · ${review.address}` : ""}
+                  </span>
+                  <span className="mt-1 block text-xs text-slate-500">
+                    {review.googleRating
+                      ? `Google ${review.googleRating.toFixed(1)} · ${
+                          review.googleReviewCount
+                        } reviews`
+                      : ""}
+                    {review.priceRange ? ` · ${review.priceRange}` : ""}
+                  </span>
                 </p>
                 <p className="text-sm text-slate-600">{review.dateReceived}</p>
                 <StatusBadge status={review.status} />
@@ -250,10 +294,30 @@ export function ReviewDetail({ review }: { review: Review }) {
             <dd className="mt-1 text-slate-600">
               {review.businessName}, {review.location}
             </dd>
+            {review.address ? (
+              <dd className="mt-1 text-slate-500">{review.address}</dd>
+            ) : null}
           </div>
           <div>
             <dt className="font-semibold text-slate-950">Business type</dt>
             <dd className="mt-1 text-slate-600">{review.businessType}</dd>
+          </div>
+          <div>
+            <dt className="font-semibold text-slate-950">Pilot profile</dt>
+            <dd className="mt-1 text-slate-600">
+              {review.googleRating
+                ? `Google ${review.googleRating.toFixed(1)} from ${
+                    review.googleReviewCount
+                  } reviews`
+                : "Demo profile"}
+            </dd>
+          </div>
+          <div>
+            <dt className="font-semibold text-slate-950">Contact</dt>
+            <dd className="mt-1 text-slate-600">
+              {review.phone ?? "Not set"}
+              {review.website ? ` · ${review.website}` : ""}
+            </dd>
           </div>
         </dl>
       </section>
@@ -263,7 +327,8 @@ export function ReviewDetail({ review }: { review: Review }) {
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Draft reply options</h2>
             <p className="mt-1 text-sm text-slate-600">
-              Complaint replies stay calm, non-defensive, and avoid legal admissions.
+              Restaurant complaints invite direct contact; solicitor replies stay
+              discreet, avoid case details, and avoid legal admissions.
             </p>
           </div>
           <button

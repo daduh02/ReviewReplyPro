@@ -22,9 +22,12 @@ export type BusinessType =
   | "Dentist"
   | "Restaurant"
   | "Takeaway"
+  | "Takeaway / Restaurant"
   | "Garage"
   | "Trade"
   | "Estate agent"
+  | "Legal services / Solicitors"
+  | "Law firm / Solicitors"
   | "Local service";
 
 export type BrandVoiceSettings = {
@@ -54,6 +57,12 @@ export type Review = {
   businessName: string;
   businessType: BusinessType;
   location: string;
+  address?: string;
+  phone?: string;
+  website?: string;
+  googleRating?: number;
+  googleReviewCount?: number;
+  priceRange?: string;
   dateReceived: string;
   status: ReviewStatus;
   sentiment: Sentiment;
@@ -75,7 +84,13 @@ export type SavedReply = {
 export type GoogleBusinessLocation = {
   id: string;
   businessName: string;
+  location: string;
   address: string;
+  phone?: string;
+  website?: string;
+  googleRating?: number;
+  googleReviewCount?: number;
+  priceRange?: string;
   status: "Connected" | "Sync paused";
 };
 
