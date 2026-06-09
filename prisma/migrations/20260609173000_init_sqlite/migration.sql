@@ -25,6 +25,8 @@ CREATE TABLE "Workspace" (
     "account_type" TEXT NOT NULL DEFAULT 'demo',
     "plan" TEXT NOT NULL DEFAULT 'Demo Free',
     "billing_status" TEXT NOT NULL DEFAULT 'mock_billing',
+    "billing_interval" TEXT NOT NULL DEFAULT 'monthly',
+    "monthly_price_pence" INTEGER NOT NULL DEFAULT 0,
     "active" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Workspace_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
@@ -38,6 +40,12 @@ CREATE TABLE "Location" (
     "businessType" TEXT NOT NULL,
     "address" TEXT,
     "city" TEXT NOT NULL,
+    "phone" TEXT,
+    "website" TEXT,
+    "googleRating" REAL,
+    "googleReviewCount" INTEGER,
+    "priceRange" TEXT,
+    "googleBusinessStatus" TEXT NOT NULL DEFAULT 'Mock connected for now',
     CONSTRAINT "Location_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 

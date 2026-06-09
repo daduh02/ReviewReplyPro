@@ -35,6 +35,8 @@ model Workspace {
   accountType        String                    @default("demo") @map("account_type")
   plan               String                    @default("Demo Free")
   billingStatus      String                    @default("mock_billing") @map("billing_status")
+  billingInterval    String                    @default("monthly") @map("billing_interval")
+  monthlyPricePence  Int                       @default(0) @map("monthly_price_pence")
   active             Boolean                   @default(true)
   locations          Location[]
   brandVoiceSettings BrandVoiceSetting?
@@ -47,14 +49,20 @@ model Workspace {
 }
 
 model Location {
-  id           String    @id @default(cuid())
-  workspaceId  String
-  workspace    Workspace @relation(fields: [workspaceId], references: [id])
-  businessName String
-  businessType String
-  address      String?
-  city         String
-  reviews      Review[]
+  id                   String    @id @default(cuid())
+  workspaceId          String
+  workspace            Workspace @relation(fields: [workspaceId], references: [id])
+  businessName         String
+  businessType         String
+  address              String?
+  city                 String
+  phone                String?
+  website              String?
+  googleRating         Float?
+  googleReviewCount    Int?
+  priceRange           String?
+  googleBusinessStatus String    @default("Mock connected for now")
+  reviews              Review[]
 }
 
 model BrandVoiceSetting {
