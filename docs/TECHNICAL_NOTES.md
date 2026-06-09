@@ -1,8 +1,12 @@
 # Technical Notes
 
+Documentation Version: 0.2.0
+Last Updated: 2026-06-09 17:38 BST
+Status: Current platform state after documentation audit.
+
 ## Data Model Summary
 
-Implemented Prisma models include:
+Implemented Prisma models:
 
 - `AdminUser`
 - `AdminWorkspaceAccess`
@@ -20,7 +24,7 @@ Implemented Prisma models include:
 - `ActivityEvent`
 - `Lead`
 
-Key account fields:
+Implemented account fields:
 
 - `account_type`
 - `plan`
@@ -45,6 +49,7 @@ Not implemented:
 - Public self-serve signup.
 - Password login.
 - Magic links.
+- External auth provider SDK.
 
 ## Google OAuth Notes
 
@@ -60,24 +65,40 @@ Required Google redirect URI format:
 https://reviewreply-pro-sand.vercel.app/api/auth/google/callback
 ```
 
-The Google OAuth button uses a normal anchor to avoid framework prefetch trying to fetch the external Google redirect as an RSC request.
+Implemented behaviour:
+
+- OAuth state is stored in a secure HTTP-only cookie.
+- Login requires an existing active `AdminUser`.
+- Disabled or unknown users are redirected away from admin access.
+- The login button uses a normal link to avoid framework prefetch issues.
 
 ## OpenAI Reply Generation Notes
 
 Implemented:
 
-- `/api/replies` can call OpenAI chat completions when `OPENAI_API_KEY` is present.
-- If OpenAI is not configured or fails, the app falls back to local mock reply generation.
-- Server actions generate and persist three reply options against a review.
+- `/api/replies` calls OpenAI chat completions when `OPENAI_API_KEY` is present.
+- `/api/replies` falls back to local deterministic replies if OpenAI is missing, fails or returns invalid JSON.
+- Review workflow server actions generate and persist three reply options against a review.
+- Generated replies use location brand voice inputs.
+- Reply actions create activity events.
+
+Implemented differently:
+
+- `OpenAIReplyProvider` in `src/lib/providers/ai.ts` currently returns local fallback replies even when `OPENAI_API_KEY` is set.
+- The main review workflow uses this provider, so it does not yet call OpenAI directly.
+
+In Progress:
+
+- Aligning the server action provider with the OpenAI-capable API path.
 
 Prompt requirements:
 
-- British English
-- Use business/location brand voice
-- Avoid arguing with reviewers
-- Avoid legal liability language
-- Invite direct contact for complaints
-- Use respectful community wording for mosque/community organisations
+- British English.
+- Use business/location brand voice.
+- Avoid arguing with reviewers.
+- Avoid legal liability language.
+- Invite direct contact for complaints.
+- Use respectful community wording for mosque/community organisations.
 
 ## Google Business Profile Readiness Fields
 
@@ -92,21 +113,21 @@ Implemented on `Location`:
 
 Not implemented:
 
-- Real review import
-- Real location listing
-- Sync scheduling
-- Posting replies back to Google
+- Real review import.
+- Real location listing.
+- Sync scheduling.
+- Posting replies back to Google.
 
 ## Lead Capture Model
 
 Implemented:
 
-- Public `/pilot` form
-- `Lead` table
-- Admin `/admin/leads` page
-- Lead statuses and KPI cards
+- Public `/pilot` form.
+- `Lead` table.
+- Admin `/admin/leads` page.
+- Lead statuses and KPI cards.
 
-Lead fields:
+Implemented lead fields:
 
 - Name
 - Business name
@@ -119,38 +140,65 @@ Lead fields:
 - Biggest challenge
 - Status
 
+Planned:
+
+- Convert lead to account workflow.
+
 ## Deployment and Vercel Notes
 
 Implemented:
 
 - Production deploys to Vercel.
-- Production data uses Turso/libSQL.
+- Production data uses Turso/libSQL when configured.
 - Local data uses SQLite.
 - Prisma Client is generated on install.
+- Production alias is `https://reviewreply-pro-sand.vercel.app`.
 
 Deployment checklist:
 
 1. Run `npm run typecheck`.
 2. Run `npm run lint`.
 3. Run `npm run build`.
-4. Apply new SQL migrations to Turso.
+4. Apply new SQL migrations to Turso when schema changes.
 5. Push to GitHub.
-6. Confirm Vercel production deployment.
-7. Smoke test desktop, tablet and phone.
+6. Deploy to Vercel production.
+7. Smoke test protected routes.
+
+Current build note:
+
+- Build passes with a non-blocking Turbopack filesystem trace warning from the admin markdown reader.
 
 ## Known Gaps and Risks
 
 Known gaps:
 
-- No automated test suite yet.
-- No real GBP review sync yet.
-- No automated Stripe billing lifecycle yet.
-- No email notifications yet.
-- Some public demo components still use client-side local demo state for demonstration only.
+- No automated test suite.
+- Main server action AI provider does not call OpenAI yet.
+- No real GBP review sync.
+- No automated Stripe billing lifecycle.
+- No email notifications.
+- Some public demo components still use static fictional demo state.
+- Admin overview uses some legacy static demo/customer arrays for counts.
 
 Risks:
 
 - Manual SQL migrations must be applied carefully to Turso.
-- OpenAI fallback can hide provider failures if monitoring is not added.
+- Local fallback replies can hide OpenAI provider failures.
 - Business Admin scoping should be tested thoroughly as more customers are added.
+- Seeded pilot data can overwrite selected fields.
 
+## Documentation Health Check
+
+Missing docs:
+
+- Test strategy.
+- Production incident runbook.
+- Database migration runbook.
+
+Outdated docs:
+
+- None after this audit.
+
+Docs requiring review:
+
+- Technical notes after OpenAI provider and GBP sync implementation.

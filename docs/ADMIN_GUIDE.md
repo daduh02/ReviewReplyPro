@@ -1,5 +1,9 @@
 # Admin Guide
 
+Documentation Version: 0.2.0
+Last Updated: 2026-06-09 17:38 BST
+Status: Current platform state after documentation audit.
+
 ## Roles
 
 ### Super Admin
@@ -7,10 +11,17 @@
 Implemented:
 
 - Can access all businesses, locations, reviews, generated replies, saved replies, brand voice settings, leads, admin users and billing/admin controls.
-- Can add and manage admin users.
+- Can add, update and remove admin users.
 - Can assign Business Admin users to workspaces.
-- Can manage accounts and locations.
+- Can add and update Demo, Pilot and Paid Customer accounts.
+- Can add and update locations.
+- Can remove Demo accounts and Demo locations.
 - Can access the Super Admin documentation page.
+
+Planned:
+
+- More detailed permission controls.
+- Better audit surfaces for admin user changes.
 
 ### Business Admin
 
@@ -22,14 +33,16 @@ Implemented:
 
 Planned:
 
-- More granular permissions for individual locations and actions.
+- Location-level permissions.
+- Action-level permissions.
 
 ## Adding Pilot Customers
 
-Implemented paths:
+Implemented:
 
 - Super Admin can add accounts from `/admin/accounts`.
 - Admins can use the first-time business setup wizard at `/app/setup`.
+- `ensurePilotCustomerAccounts()` seeds protected pilot customer records from the internal customer data list.
 
 Recommended process:
 
@@ -41,6 +54,10 @@ Recommended process:
 6. Add brand voice settings for each location.
 7. Assign the relevant Business Admin user to the workspace.
 
+In Progress:
+
+- Cleaner conversion flow from lead to pilot account.
+
 ## Managing Businesses
 
 Use `/admin/accounts`.
@@ -48,10 +65,14 @@ Use `/admin/accounts`.
 Implemented:
 
 - Add accounts.
-- Update account name, type, plan, billing status, billing interval and monthly price.
+- Update account name, account type, plan, billing status, billing interval and monthly price.
 - Activate or deactivate accounts.
-- See Pilot Customer and Free for Life badges.
+- See Pilot Customer, Paid Customer and Free for Life badges.
 - Prevent deletion of Pilot and Customer accounts.
+
+Implemented differently:
+
+- Monthly billing values can be stored, but Stripe billing is not active.
 
 Protected rule:
 
@@ -61,26 +82,20 @@ Protected rule:
 
 Use `/admin/accounts`.
 
-Implemented fields:
+Implemented:
 
-- Business name
-- Business type
-- Location name
-- Address
-- Phone
-- Website
-- Google rating
-- Google review count
-- Price range
-- Google Business Profile readiness fields
+- Add and update locations.
+- Store business name, business type, location name, address, phone, website, Google rating, Google review count and price range.
+- Store Google Business Profile readiness IDs.
+- Remove locations only when their workspace is a Demo account.
 
-Protected rule:
+Planned:
 
-- Pilot and Customer locations should not be deleted through demo/reset actions.
+- Real GBP location connection and sync state.
 
 ## Managing Reviews
 
-Use `/app/reviews`.
+Use `/app/reviews` and `/app/generate`.
 
 Implemented:
 
@@ -91,10 +106,10 @@ Implemented:
 - Open review details.
 - Add reviews manually from `/app/generate`.
 
-Statuses used in the workflow:
+Implemented statuses:
 
 - New
-- Drafted
+- Draft ready
 - Edited
 - Copied
 - Posted
@@ -107,13 +122,22 @@ Use the review detail page.
 Implemented:
 
 - Generate three reply options.
+- Regenerate reply options.
 - Select a reply option.
 - Edit reply text.
-- Save reply.
-- Copy reply.
+- Save reply to the library.
+- Copy reply and mark copied.
 - Mark reply as posted.
 - Archive review.
-- Track activity events for reply actions.
+- Track activity events for generated, selected, edited, copied, saved, posted and archived actions.
+
+Implemented differently:
+
+- Main workflow reply generation currently returns local fallback replies; the API route can call OpenAI separately.
+
+In Progress:
+
+- Connecting the main workflow provider directly to OpenAI when configured.
 
 ## Managing Leads and Enquiries
 
@@ -135,6 +159,10 @@ Lead statuses:
 - Pilot Customer
 - Not Interested
 
+Planned:
+
+- Convert lead to pilot/customer account from the lead detail flow.
+
 ## Converting Pilot Customer to Paid Customer
 
 Implemented manually:
@@ -148,7 +176,8 @@ Implemented manually:
 
 Planned:
 
-- Stripe-backed subscription creation and billing status sync.
+- Stripe-backed checkout or subscription creation.
+- Webhook verification and billing status sync.
 
 ## Protected Account Rules
 
@@ -157,5 +186,24 @@ Implemented:
 - Demo accounts are resettable/removable.
 - Pilot accounts are protected from accidental deletion.
 - Customer accounts are protected from accidental deletion.
-- Demo reset and seed refresh functions should not modify Pilot or Customer records.
+- Demo location deletion is allowed only for Demo workspaces.
+- Pilot/customer reviews, replies and settings are not removed by demo reset actions.
 
+Known issue:
+
+- The internal pilot seeding function upserts known pilot records from code, which is useful for ensuring required pilot accounts exist but should be treated carefully when editing those pilot records manually.
+
+## Documentation Health Check
+
+Missing docs:
+
+- Lead-to-customer conversion runbook.
+- Production support runbook.
+
+Outdated docs:
+
+- None after this audit.
+
+Docs requiring review:
+
+- Account management docs after billing automation ships.

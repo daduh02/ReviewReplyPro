@@ -1,15 +1,22 @@
 # Pilot Customers
 
+Documentation Version: 0.2.0
+Last Updated: 2026-06-09 17:38 BST
+Status: Current platform state after documentation audit.
+
 ## Pilot Customer Definition
 
-A Pilot Customer is a real business using ReviewReply Pro during MVP testing.
+Implemented:
 
-Pilot Customers are not demo content. They should:
+- A Pilot Customer is a real business using ReviewReply Pro during MVP testing.
+- Pilot Customers are not public demo content.
+- Pilot Customer accounts use `account_type = pilot`.
+- Pilot Customer accounts are protected from accidental deletion.
+- Pilot Customer records are included in database-backed product workflows.
 
-- Persist permanently.
-- Be included in real reporting.
-- Be protected from accidental deletion.
-- Have real locations, reviews, brand voice settings and saved replies.
+In Progress:
+
+- Separating every remaining admin reporting surface from legacy static demo arrays.
 
 ## Free for Life Rules
 
@@ -17,16 +24,19 @@ Implemented:
 
 - `plan = Free for Life`
 - `billing_status = exempt`
+- `billing_interval = free_for_life`
 - `active = true`
 - Protected from deletion
 
-Free for Life should be used only where the business is intentionally granted permanent free access.
+Usage rule:
+
+- Free for Life should be used only where the business is intentionally granted permanent free access.
 
 ## Masjid As-Salaam
 
 Implemented:
 
-- Masjid As-Salaam is the first Free for Life pilot account.
+- Masjid As-Salaam is the first Free for Life Pilot Customer.
 - It is treated as a protected Pilot Customer.
 - It is not shown in public demo/sample datasets.
 - Its replies should use respectful UK English and warm community wording.
@@ -37,7 +47,18 @@ Current intended account setup:
 - Account type: Pilot
 - Plan: Free for Life
 - Billing status: Exempt
+- Billing interval: Free for Life
 - Active: True
+
+## Other Pilot Businesses
+
+Implemented:
+
+- The internal customer data list also contains additional pilot customer records used to keep required pilot businesses available in the database.
+
+Important data rule:
+
+- Real pilot businesses must not be added to public marketing/demo pages unless explicitly approved.
 
 ## Adding the Next Pilot Businesses
 
@@ -53,17 +74,23 @@ Recommended process:
 8. Add initial reviews manually.
 9. Generate and review reply options with the business.
 
+In Progress:
+
+- Building a cleaner lead-to-pilot conversion workflow.
+
 ## Data Protection Rules
 
-Pilot/customer data should be handled as real business data.
-
-Rules:
+Implemented rules:
 
 - Do not place real pilot data in public demo files.
 - Do not show real pilot businesses on public marketing/demo pages unless explicitly approved.
 - Do not reset pilot/customer records during demo refreshes.
 - Do not delete pilot/customer accounts without explicit owner approval.
 - Keep admin access limited to authorised Google accounts.
+
+Known risk:
+
+- Pilot records seeded from code can overwrite selected fields when the seeding function runs. Avoid editing seeded pilot constants casually.
 
 ## Information to Collect
 
@@ -90,3 +117,17 @@ For each pilot business collect:
 - Complaint handling style
 - Business Admin email address
 
+## Documentation Health Check
+
+Missing docs:
+
+- Pilot onboarding checklist template.
+- Data retention policy.
+
+Outdated docs:
+
+- None after this audit.
+
+Docs requiring review:
+
+- Pilot customer rules after GBP sync starts importing real reviews.

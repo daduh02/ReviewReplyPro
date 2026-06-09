@@ -9,6 +9,11 @@ export const adminDocs = [
     root: true,
   },
   {
+    slug: "project-status",
+    title: "Project Status",
+    filename: "PROJECT_STATUS.md",
+  },
+  {
     slug: "product-overview",
     title: "Product Overview",
     filename: "PRODUCT_OVERVIEW.md",
@@ -39,6 +44,11 @@ export type AdminDoc = (typeof adminDocs)[number];
 
 const adminDocPaths = {
   readme: path.join(/*turbopackIgnore: true*/ process.cwd(), "README.md"),
+  "project-status": path.join(
+    /*turbopackIgnore: true*/ process.cwd(),
+    "docs",
+    "PROJECT_STATUS.md",
+  ),
   "product-overview": path.join(
     /*turbopackIgnore: true*/ process.cwd(),
     "docs",
