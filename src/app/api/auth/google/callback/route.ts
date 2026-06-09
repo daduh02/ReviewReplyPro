@@ -4,6 +4,8 @@ import {
   getBaseUrl,
   getGoogleRedirectUri,
   setAdminSession,
+  toAdminRole,
+  toAdminStatus,
   validateGoogleOAuthState,
 } from "@/lib/admin-auth";
 import { getDb } from "@/lib/db";
@@ -95,8 +97,8 @@ export async function GET(request: NextRequest) {
     await setAdminSession({
       email: updatedAdmin.email,
       name: updatedAdmin.name,
-      role: updatedAdmin.role,
-      status: updatedAdmin.status,
+      role: toAdminRole(updatedAdmin.role),
+      status: toAdminStatus(updatedAdmin.status),
     });
 
     return NextResponse.redirect(`${baseUrl}/admin`);

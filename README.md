@@ -9,7 +9,7 @@ The product is centred on a Review Inbox, not a basic paste-review prompt. Demo 
 - Next.js App Router
 - TypeScript
 - Tailwind CSS
-- Prisma schema for a Postgres-compatible database
+- Prisma ORM with SQLite locally and Turso/libSQL in production
 - Mock-first OpenAI provider abstraction
 - Mock-first Google Business Profile provider abstraction
 - Mock-safe Stripe checkout and webhook scaffolding
@@ -25,7 +25,13 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-The app runs without real Google, Stripe, OpenAI, or database credentials. Demo data is loaded from local TypeScript modules, then pilot workflow changes persist in browser localStorage.
+The app runs without real Google, Stripe, OpenAI, or Turso credentials. Demo data is loaded from local TypeScript modules, then pilot workflow changes persist in browser localStorage.
+
+For local admin database testing, use SQLite:
+
+```bash
+npm run db:reset:local
+```
 
 Set `OPENAI_API_KEY` in `.env.local` to generate reply options with OpenAI. Without it, the app uses local mock replies so the workflow still runs.
 
@@ -36,7 +42,9 @@ Admin login is available at `/admin/login` and uses Google OAuth. The first Supe
 Required env vars:
 
 ```bash
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/reviewreply_pro"
+DATABASE_URL="file:./dev.db"
+TURSO_DATABASE_URL="libsql://your-database.turso.io"
+TURSO_AUTH_TOKEN=""
 GOOGLE_CLIENT_ID=""
 GOOGLE_CLIENT_SECRET=""
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
@@ -50,10 +58,12 @@ http://localhost:3000/api/auth/google/callback
 https://your-production-domain/api/auth/google/callback
 ```
 
-Run Prisma migrations before using `/admin` against a real database:
+Use the checked-in SQLite migration locally and apply the same SQL to
+Turso/libSQL in production:
 
 ```bash
-npx prisma migrate deploy
+npm run db:reset:local
+turso db shell <database-name> < ./prisma/migrations/20260609173000_init_sqlite/migration.sql
 ```
 
 Unauthorised Google accounts are blocked with: “You do not have access to ReviewReply Pro admin.”

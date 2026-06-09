@@ -9,6 +9,8 @@ type LoginPageProps = {
 const errorMessages: Record<string, string> = {
   configuration:
     "Google OAuth is not configured yet. Add the Google client ID and secret, then try again.",
+  database:
+    "Production database is not configured yet. Add TURSO_DATABASE_URL and TURSO_AUTH_TOKEN, then try again.",
   oauth: "Google sign-in could not be completed. Please try again.",
   profile: "Google did not return an email address for this account.",
 };

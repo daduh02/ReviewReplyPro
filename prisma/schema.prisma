@@ -3,81 +3,58 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-enum AdminRole {
-  super_admin
-  business_admin
-}
-
-enum AdminStatus {
-  active
-  disabled
-}
-
-enum AccountType {
-  demo
-  pilot
-  customer
-}
-
-enum BillingStatus {
-  mock_billing
-  exempt
-  active
-  past_due
-}
-
 model AdminUser {
-  id          String      @id @default(cuid())
-  email       String      @unique
+  id          String    @id @default(cuid())
+  email       String    @unique
   name        String?
-  role        AdminRole   @default(business_admin)
-  status      AdminStatus @default(active)
-  createdAt   DateTime    @default(now()) @map("created_at")
-  lastLoginAt DateTime?   @map("last_login_at")
+  role        String    @default("business_admin")
+  status      String    @default("active")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  lastLoginAt DateTime? @map("last_login_at")
 
   @@map("admin_users")
 }
 
 model User {
-  id        String      @id @default(cuid())
-  email     String      @unique
-  name      String?
-  createdAt DateTime    @default(now())
+  id         String      @id @default(cuid())
+  email      String      @unique
+  name       String?
+  createdAt  DateTime    @default(now())
   workspaces Workspace[]
 }
 
 model Workspace {
-  id                  String              @id @default(cuid())
-  name                String
-  ownerId             String
-  owner               User                @relation(fields: [ownerId], references: [id])
-  accountType         AccountType         @default(demo) @map("account_type")
-  plan                String              @default("Demo Free")
-  billingStatus       BillingStatus       @default(mock_billing) @map("billing_status")
-  active              Boolean             @default(true)
-  locations           Location[]
-  brandVoiceSettings  BrandVoiceSetting?
-  integrations        Integration[]
-  googleConnection    GoogleBusinessConnection?
-  subscription        Subscription?
-  usageEvents         UsageEvent[]
-  savedReplies        SavedReply[]
-  createdAt           DateTime            @default(now())
+  id                 String                    @id @default(cuid())
+  name               String
+  ownerId            String
+  owner              User                      @relation(fields: [ownerId], references: [id])
+  accountType        String                    @default("demo") @map("account_type")
+  plan               String                    @default("Demo Free")
+  billingStatus      String                    @default("mock_billing") @map("billing_status")
+  active             Boolean                   @default(true)
+  locations          Location[]
+  brandVoiceSettings BrandVoiceSetting?
+  integrations       Integration[]
+  googleConnection   GoogleBusinessConnection?
+  subscription       Subscription?
+  usageEvents        UsageEvent[]
+  savedReplies       SavedReply[]
+  createdAt          DateTime                  @default(now())
 }
 
 model Location {
-  id          String    @id @default(cuid())
-  workspaceId String
-  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  id           String    @id @default(cuid())
+  workspaceId  String
+  workspace    Workspace @relation(fields: [workspaceId], references: [id])
   businessName String
   businessType String
-  address     String?
-  city        String
-  reviews     Review[]
+  address      String?
+  city         String
+  reviews      Review[]
 }
 
 model BrandVoiceSetting {

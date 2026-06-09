@@ -21,6 +21,14 @@ export const googleStateCookie = "rrp_google_oauth_state";
 
 const sessionMaxAgeSeconds = 60 * 60 * 24 * 7;
 
+export function toAdminRole(value: string): AdminRole {
+  return value === "super_admin" ? "super_admin" : "business_admin";
+}
+
+export function toAdminStatus(value: string): AdminStatus {
+  return value === "disabled" ? "disabled" : "active";
+}
+
 function getSessionSecret() {
   return (
     process.env.ADMIN_SESSION_SECRET ||
@@ -186,8 +194,8 @@ export async function getCurrentAdmin() {
     id: adminUser.id,
     email: adminUser.email,
     name: adminUser.name,
-    role: adminUser.role as AdminRole,
-    status: adminUser.status as AdminStatus,
+    role: toAdminRole(adminUser.role),
+    status: toAdminStatus(adminUser.status),
     createdAt: adminUser.createdAt,
     lastLoginAt: adminUser.lastLoginAt,
   };

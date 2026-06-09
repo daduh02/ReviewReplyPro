@@ -14,6 +14,10 @@ export async function GET() {
     );
   }
 
+  if (process.env.VERCEL === "1" && !process.env.TURSO_DATABASE_URL) {
+    return NextResponse.redirect(`${await getBaseUrl()}/admin/login?error=database`);
+  }
+
   const state = await createGoogleOAuthState();
   const params = new URLSearchParams({
     client_id: clientId,
