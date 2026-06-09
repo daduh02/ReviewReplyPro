@@ -11,9 +11,19 @@ import {
 import Link from "next/link";
 
 const appLinks = [
-  { href: "/app/reviews", label: "Review Inbox", icon: Inbox },
-  { href: "/app/generate", label: "Generate Reply", icon: MessageSquarePlus },
-  { href: "/app/saved-replies", label: "Saved Replies", icon: FileText },
+  { href: "/app/reviews", label: "Review Inbox", mobileLabel: "Inbox", icon: Inbox },
+  {
+    href: "/app/generate",
+    label: "Generate Reply",
+    mobileLabel: "Generate",
+    icon: MessageSquarePlus,
+  },
+  {
+    href: "/app/saved-replies",
+    label: "Saved Replies",
+    mobileLabel: "Saved",
+    icon: FileText,
+  },
   { href: "/app/brand-voice", label: "Brand Voice", icon: SlidersHorizontal },
   { href: "/app/integrations", label: "Integrations", icon: Link2 },
   { href: "/app/settings", label: "Settings", icon: Settings },
@@ -77,7 +87,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </header>
-        <main className="px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+        <nav
+          aria-label="Mobile app navigation"
+          className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/95 px-3 py-2 shadow-[0_-10px_30px_rgba(15,23,42,0.08)] backdrop-blur lg:hidden"
+        >
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {appLinks.map((link) => {
+              const Icon = link.icon;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="flex min-w-20 flex-col items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-2 text-center text-[11px] font-semibold leading-tight text-slate-700 shadow-sm hover:border-blue-200 hover:text-blue-700"
+                >
+                  <Icon className="size-4" />
+                  <span>{link.mobileLabel ?? link.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+        <main className="px-4 pb-28 pt-6 sm:px-6 lg:px-8 lg:pb-6">
+          {children}
+        </main>
       </div>
     </div>
   );
