@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ReviewReply Pro
 
-## Getting Started
+ReviewReply Pro is a UK-focused SaaS MVP for local businesses that want professional, on-brand draft replies for Google and customer reviews.
 
-First, run the development server:
+The product is centred on a Review Inbox, not a basic paste-review prompt. Mock Google Business Profile reviews are imported into the inbox, 3 draft reply options are prepared, and the user can edit, copy, save, mark as posted, or archive each review.
+
+## Stack
+
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- Prisma schema for a Postgres-compatible database
+- Mock-first OpenAI provider abstraction
+- Mock-first Google Business Profile provider abstraction
+- Mock-safe Stripe checkout and webhook scaffolding
+- Vercel-ready project structure
+
+## Local setup
 
 ```bash
+npm install
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The app runs without real Google, Stripe, OpenAI, or database credentials. Demo data is loaded from local TypeScript modules.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Useful commands
 
-## Learn More
+```bash
+npm run lint
+npm run typecheck
+npm run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Mock providers
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `MockGoogleReviewsProvider` returns UK business locations and review examples.
+- `MockAIReplyProvider` generates British English reply variants locally.
+- Stripe checkout and webhooks return local-safe placeholder responses unless Stripe env vars are set.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Future Google Business Profile integration
 
-## Deploy on Vercel
+The `GoogleReviewsProvider` interface is ready for a real provider. Add OAuth, token storage, location listing, review fetching, and sync scheduling behind `GoogleBusinessProfileProvider`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Required future env vars are listed in `.env.example`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Future Stripe setup
+
+Add real Stripe SDK calls inside `createCheckoutSession`, configure `STRIPE_STARTER_PRICE_ID` and `STRIPE_PRO_PRICE_ID`, and validate webhook signatures before production use.
+
+## Future OpenAI setup
+
+Add an OpenAI SDK call inside `OpenAIReplyProvider`. Prompts should keep British English, follow the brand voice settings, and handle complaints calmly without admitting legal liability.
+
+## Demo businesses
+
+The seed-style demo data includes Glow Salon Leeds, Smile Studio Manchester, Bradford Auto Repairs, The Curry House Birmingham, North Leeds Estate Agents, and Yorkshire Plumbing Co.

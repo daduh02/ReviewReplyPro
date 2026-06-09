@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String      @id @default(cuid())
+  email     String      @unique
+  name      String?
+  createdAt DateTime    @default(now())
+  workspaces Workspace[]
+}
+
+model Workspace {
+  id                  String              @id @default(cuid())
+  name                String
+  ownerId             String
+  owner               User                @relation(fields: [ownerId], references: [id])
+  locations           Location[]
+  brandVoiceSettings  BrandVoiceSetting?
+  integrations        Integration[]
+  googleConnection    GoogleBusinessConnection?
+  subscription        Subscription?
+  usageEvents         UsageEvent[]
+  savedReplies        SavedReply[]
+  createdAt           DateTime            @default(now())
+}
+
+model Location {
+  id          String    @id @default(cuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  businessName String
+  businessType String
+  address     String?
+  city        String
+  reviews     Review[]
+}
+
+model BrandVoiceSetting {
+  id                              String    @id @default(cuid())
+  workspaceId                     String    @unique
+  workspace                       Workspace @relation(fields: [workspaceId], references: [id])
+  preferredTone                   String
+  defaultLength                   String
+  greetingStyle                   String?
+  signOffStyle                    String?
+  wordsToUse                      String?
+  wordsToAvoid                    String?
+  complaintHandlingStyle          String?
+  useEmojis                       Boolean   @default(false)
+  mentionBusinessName             Boolean   @default(true)
+  apologiseForPoorExperiences     Boolean   @default(true)
+  inviteUnhappyCustomersToContact Boolean   @default(true)
+  keepRepliesShortByDefault       Boolean   @default(false)
+}
+
+model Review {
+  id               String           @id @default(cuid())
+  locationId       String
+  location         Location         @relation(fields: [locationId], references: [id])
+  customerName     String?
+  starRating       Int
+  reviewText       String
+  source           String
+  status           String
+  sentiment        String
+  receivedAt       DateTime
+  generatedReplies GeneratedReply[]
+  savedReplies     SavedReply[]
+}
+
+model GeneratedReply {
+  id        String   @id @default(cuid())
+  reviewId  String
+  review    Review   @relation(fields: [reviewId], references: [id])
+  variant   Int
+  tone      String
+  length    String
+  body      String
+  selected  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model SavedReply {
+  id          String    @id @default(cuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  reviewId    String?
+  review      Review?   @relation(fields: [reviewId], references: [id])
+  body        String
+  tone        String
+  category    String
+  usageCount  Int       @default(0)
+  archived    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+}
+
+model Integration {
+  id          String    @id @default(cuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  provider    String
+  status      String
+  metadata    Json?
+  updatedAt   DateTime  @updatedAt
+}
+
+model GoogleBusinessConnection {
+  id              String    @id @default(cuid())
+  workspaceId     String    @unique
+  workspace       Workspace @relation(fields: [workspaceId], references: [id])
+  googleAccountId String?
+  accessToken     String?
+  refreshToken    String?
+  connected       Boolean   @default(false)
+  lastSyncedAt    DateTime?
+}
+
+model Subscription {
+  id                   String    @id @default(cuid())
+  workspaceId          String    @unique
+  workspace            Workspace @relation(fields: [workspaceId], references: [id])
+  plan                 String
+  status               String
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  currentPeriodEnd     DateTime?
+}
+
+model UsageEvent {
+  id          String    @id @default(cuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  eventType   String
+  quantity    Int       @default(1)
+  createdAt   DateTime  @default(now())
+}
