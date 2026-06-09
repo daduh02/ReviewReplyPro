@@ -1,4 +1,5 @@
 import {
+  BookOpen,
   CreditCard,
   FileText,
   Inbox,
@@ -56,6 +57,13 @@ const controlCards = [
     title: "Leads",
     description: "Review pilot interest forms and manage lead status.",
     icon: UserRoundCheck,
+    superAdminOnly: true,
+  },
+  {
+    href: "/admin/documentation",
+    title: "Documentation",
+    description: "Read current product, admin, pilot and technical docs.",
+    icon: BookOpen,
     superAdminOnly: true,
   },
 ];

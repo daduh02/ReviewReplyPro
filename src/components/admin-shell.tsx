@@ -1,4 +1,5 @@
 import {
+  BookOpen,
   CreditCard,
   FileText,
   Inbox,
@@ -19,6 +20,7 @@ const adminLinks = [
   { href: "/admin/accounts", label: "Accounts", icon: MapPinned, superAdminOnly: true },
   { href: "/admin/leads", label: "Leads", icon: UserRoundCheck, superAdminOnly: true },
   { href: "/admin/users", label: "Admin Users", icon: Users, superAdminOnly: true },
+  { href: "/admin/documentation", label: "Documentation", icon: BookOpen, superAdminOnly: true },
   { href: "/app/reviews", label: "All Reviews", icon: Inbox },
   { href: "/app/saved-replies", label: "Saved Replies", icon: FileText },
   { href: "/app/brand-voice", label: "Brand Voice", icon: SlidersHorizontal },
