@@ -29,6 +29,35 @@ The app runs without real Google, Stripe, OpenAI, or database credentials. Demo 
 
 Set `OPENAI_API_KEY` in `.env.local` to generate reply options with OpenAI. Without it, the app uses local mock replies so the workflow still runs.
 
+## Admin Google login
+
+Admin login is available at `/admin/login` and uses Google OAuth. The first Super Admin is seeded as `hussain.dadu@gmail.com`.
+
+Required env vars:
+
+```bash
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/reviewreply_pro"
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+ADMIN_SESSION_SECRET="replace-with-a-long-random-secret"
+```
+
+Add these redirect URIs in Google Cloud:
+
+```text
+http://localhost:3000/api/auth/google/callback
+https://your-production-domain/api/auth/google/callback
+```
+
+Run Prisma migrations before using `/admin` against a real database:
+
+```bash
+npx prisma migrate deploy
+```
+
+Unauthorised Google accounts are blocked with: “You do not have access to ReviewReply Pro admin.”
+
 ## Useful commands
 
 ```bash
