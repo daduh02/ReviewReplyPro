@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { defaultBrandVoice, pilotLocations } from "@/lib/demo-data";
+import { defaultBrandVoice, demoLocations } from "@/lib/demo-data";
 import type { BrandVoiceSettings, ReplyLength, Tone } from "@/lib/types";
 
 export function BrandVoiceForm() {
   const [settings, setSettings] =
     useState<BrandVoiceSettings>(defaultBrandVoice);
-  const [selectedLocation, setSelectedLocation] = useState(pilotLocations[0].id);
+  const [selectedLocation, setSelectedLocation] = useState(demoLocations[0].id);
 
   function update<K extends keyof BrandVoiceSettings>(
     key: K,
@@ -22,14 +22,14 @@ export function BrandVoiceForm() {
         <h2 className="text-2xl font-semibold text-slate-950">Brand Voice</h2>
         <p className="mt-2 text-sm leading-6 text-slate-600">
           Set the defaults used when ReviewReply Pro prepares reply drafts for
-          each pilot business location.
+          each fictional demo business location.
         </p>
         <label className="mt-5 block text-sm font-semibold text-slate-700">
-          Pilot business/location
+          Demo business/location
           <select
             value={selectedLocation}
             onChange={(event) => {
-              const next = pilotLocations.find(
+              const next = demoLocations.find(
                 (location) => location.id === event.target.value,
               );
               setSelectedLocation(event.target.value);
@@ -39,7 +39,7 @@ export function BrandVoiceForm() {
             }}
             className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2"
           >
-            {pilotLocations.map((location) => (
+            {demoLocations.map((location) => (
               <option key={location.id} value={location.id}>
                 {location.businessName} — {location.location}
               </option>
@@ -99,13 +99,13 @@ export function BrandVoiceForm() {
         </p>
         <div className="mt-5 rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm leading-7 text-blue-950">
           {settings.businessType.includes("Solicitors")
-            ? `Dear Farah, thank you for your kind review. We are pleased to hear that everything was explained clearly and that you felt well supported. ${settings.signOffStyle}.`
-            : `Hi Amina, thank you for your lovely review. We are delighted you enjoyed the fresh food and charcoal grill at ${settings.businessName} in ${settings.location}. ${settings.signOffStyle}.`}
+            ? `Dear James, thank you for your kind review. We are pleased to hear that everything was explained clearly and that you felt well supported. ${settings.signOffStyle}.`
+            : `Hi Sarah, thank you for your lovely review. We are delighted you had a positive experience with ${settings.businessName} in ${settings.location}. ${settings.signOffStyle}.`}
         </div>
         <div className="mt-5 rounded-lg border border-amber-100 bg-amber-50 p-4 text-sm leading-7 text-amber-950">
           {settings.businessType.includes("Solicitors")
-            ? `Dear Lee, thank you for your feedback. We are sorry to hear that communication did not meet your expectations. To avoid discussing details publicly, please contact the ${settings.location} office directly so your concerns can be reviewed appropriately. ${settings.signOffStyle}.`
-            : `Hi Sam, thank you for letting us know. We are sorry your delivery took longer than expected and that an item was missing. Please contact the restaurant directly with your order details so we can look into this for you. ${settings.signOffStyle}.`}
+            ? `Dear James, thank you for your feedback. We are sorry to hear that communication did not meet your expectations. To avoid discussing details publicly, please contact the office directly so your concerns can be reviewed appropriately. ${settings.signOffStyle}.`
+            : `Hi Priya, thank you for letting us know. We are sorry your experience did not meet expectations. Please contact the business directly with the details so we can look into this for you. ${settings.signOffStyle}.`}
         </div>
       </aside>
     </div>

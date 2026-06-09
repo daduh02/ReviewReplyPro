@@ -6,14 +6,14 @@ import { buildMockReplies } from "@/lib/providers/ai";
 import type { ReplyLength, Tone } from "@/lib/types";
 
 export function ManualReplyGenerator() {
-  const [business, setBusiness] = useState("Ashpazi - Charcoal Kitchen");
-  const [customer, setCustomer] = useState("Amina K");
+  const [business, setBusiness] = useState("Example Hair Salon");
+  const [customer, setCustomer] = useState("Sarah M");
   const [rating, setRating] = useState(5);
   const [source, setSource] = useState("Google");
   const [tone, setTone] = useState<Tone>("Friendly");
   const [length, setLength] = useState<ReplyLength>("Standard");
   const [review, setReview] = useState(
-    "Food was fresh, full of flavour and ready on time for collection. The mixed grill was excellent.",
+    "Brilliant service from start to finish. The team were friendly, professional, and I'm really pleased with the result. I'll definitely be coming back.",
   );
   const [replies, setReplies] = useState<string[]>([]);
 
@@ -24,10 +24,12 @@ export function ManualReplyGenerator() {
         starRating: rating,
         customerName: customer,
         businessName: business,
-        businessType: business.includes("Gardner")
-          ? "Legal services / Solicitors"
-          : "Takeaway / Restaurant",
-        location: business.includes("Gardner") ? "Dewsbury" : "Batley",
+        businessType: business.includes("Dental")
+          ? "Dentist"
+          : business.includes("Restaurant")
+            ? "Restaurant"
+            : "Salon",
+        location: business.includes("Restaurant") ? "Birmingham" : "Leeds",
         tone,
         replyLength: length,
       }),

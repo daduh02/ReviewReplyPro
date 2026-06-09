@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { pilotLocations } from "@/lib/demo-data";
+import { demoLocations } from "@/lib/demo-data";
 import { buildMockReplies } from "@/lib/providers/ai";
 import type { ReplyLength, Review, ReviewStatus, Tone } from "@/lib/types";
 import { ReviewStars } from "@/components/review-stars";
@@ -76,7 +76,7 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
       <section className="grid gap-4 md:grid-cols-4">
         {[
           ["Visible reviews", visibleReviews.length],
-          ["Pilot locations", pilotLocations.length],
+          ["Demo locations", demoLocations.length],
           [
             "Drafts ready",
             visibleReviews.filter((item) => item.status === "Draft ready").length,
@@ -95,7 +95,7 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Review Inbox</h2>
             <p className="mt-1 text-sm text-slate-600">
-              Pilot Google reviews are imported here and prepared as reply drafts.
+              Fictional Google-style reviews are imported here and prepared as reply drafts.
             </p>
           </div>
           <Link
@@ -115,7 +115,7 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
               className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
             >
               <option>All locations</option>
-              {pilotLocations.map((location) => (
+              {demoLocations.map((location) => (
                 <option key={location.id}>
                   {location.businessName} — {location.location}
                 </option>
@@ -123,8 +123,8 @@ export function ReviewInbox({ reviews }: { reviews: Review[] }) {
             </select>
           </label>
           <div className="rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm leading-6 text-blue-950">
-            Gardner Champion Solicitors Ltd is treated as one business with two
-            separate locations: Dewsbury and Rugeley.
+            Demo mode uses fictional UK businesses only, so screenshots and
+            public examples never display real trading names.
           </div>
         </div>
 
@@ -303,13 +303,13 @@ export function ReviewDetail({ review }: { review: Review }) {
             <dd className="mt-1 text-slate-600">{review.businessType}</dd>
           </div>
           <div>
-            <dt className="font-semibold text-slate-950">Pilot profile</dt>
+            <dt className="font-semibold text-slate-950">Demo profile</dt>
             <dd className="mt-1 text-slate-600">
               {review.googleRating
                 ? `Google ${review.googleRating.toFixed(1)} from ${
                     review.googleReviewCount
                   } reviews`
-                : "Demo profile"}
+                : "Fictional demo profile"}
             </dd>
           </div>
           <div>

@@ -47,11 +47,10 @@ export function buildMockReplies(input: ReplyGenerationInput) {
   const isComplaint = input.starRating <= 3;
   const isLegal =
     input.businessType.toLowerCase().includes("solicitor") ||
-    input.businessName.toLowerCase().includes("gardner champion");
+    input.businessType.toLowerCase().includes("legal");
   const isRestaurant =
     input.businessType.toLowerCase().includes("restaurant") ||
-    input.businessType.toLowerCase().includes("takeaway") ||
-    input.businessName.toLowerCase().includes("ashpazi");
+    input.businessType.toLowerCase().includes("takeaway");
   const signOff =
     brand.signOffStyle || `Thanks from the ${input.businessName} team`;
 

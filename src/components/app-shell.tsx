@@ -46,8 +46,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             Pro demo workspace
           </div>
           <p className="mt-2 text-sm leading-6 text-blue-900/75">
-            Mock Google sync is active for Ashpazi Batley and Gardner Champion
-            Dewsbury/Rugeley pilot locations.
+            Mock Google sync is active for fictional example businesses across
+            UK-style demo locations.
           </p>
         </div>
         <nav className="mt-6 space-y-1">
@@ -79,7 +79,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             <div className="flex items-center gap-3">
               <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">
-                Free Forever pilot
+                Demo workspace
               </span>
               <div className="flex size-9 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white">
                 HD
