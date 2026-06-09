@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { ShieldCheck, UserPlus, Users } from "lucide-react";
 import { getDb } from "@/lib/db";
 import { requireSuperAdmin } from "@/lib/admin-auth";
+import { ensurePilotCustomerAccounts } from "@/lib/account-admin";
 
 const roleOptions = [
   { value: "super_admin", label: "Super Admin" },
@@ -41,12 +42,25 @@ async function addAdminUser(formData: FormData) {
   }
 
   const db = getDb();
+  const workspaceIds = formData.getAll("workspaceId").map(String);
 
-  await db.adminUser.upsert({
+  const adminUser = await db.adminUser.upsert({
     where: { email },
     update: { name, role, status: "active" },
     create: { email, name, role, status: "active" },
   });
+
+  if (role === "business_admin") {
+    await db.adminWorkspaceAccess.deleteMany({
+      where: { adminUserId: adminUser.id },
+    });
+    await db.adminWorkspaceAccess.createMany({
+      data: workspaceIds.map((workspaceId) => ({
+        adminUserId: adminUser.id,
+        workspaceId,
+      })),
+    });
+  }
 
   revalidatePath("/admin/users");
   redirect("/admin/users");
@@ -69,6 +83,7 @@ async function updateAdminUser(formData: FormData) {
   }
 
   const db = getDb();
+  const workspaceIds = formData.getAll("workspaceId").map(String);
   const targetAdmin = await db.adminUser.findUnique({ where: { id } });
 
   if (!targetAdmin) {
@@ -84,6 +99,16 @@ async function updateAdminUser(formData: FormData) {
     where: { id },
     data: { role, status: nextStatus },
   });
+  await db.adminWorkspaceAccess.deleteMany({ where: { adminUserId: id } });
+
+  if (role === "business_admin") {
+    await db.adminWorkspaceAccess.createMany({
+      data: workspaceIds.map((workspaceId) => ({
+        adminUserId: id,
+        workspaceId,
+      })),
+    });
+  }
 
   revalidatePath("/admin/users");
   redirect("/admin/users");
@@ -106,6 +131,7 @@ async function removeAdminUser(formData: FormData) {
     redirect("/admin/users");
   }
 
+  await db.adminWorkspaceAccess.deleteMany({ where: { adminUserId: id } });
   await db.adminUser.delete({ where: { id } });
 
   revalidatePath("/admin/users");
@@ -114,10 +140,18 @@ async function removeAdminUser(formData: FormData) {
 
 export default async function AdminUsersPage() {
   const currentAdmin = await requireSuperAdmin();
+  await ensurePilotCustomerAccounts();
   const db = getDb();
-  const adminUsers = await db.adminUser.findMany({
-    orderBy: [{ role: "desc" }, { createdAt: "asc" }],
-  });
+  const [adminUsers, workspaces] = await Promise.all([
+    db.adminUser.findMany({
+      include: { workspaceAccess: true },
+      orderBy: [{ role: "desc" }, { createdAt: "asc" }],
+    }),
+    db.workspace.findMany({
+      where: { active: true },
+      orderBy: [{ accountType: "desc" }, { name: "asc" }],
+    }),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -177,6 +211,27 @@ export default async function AdminUsersPage() {
               Add user
             </span>
           </button>
+          <fieldset className="lg:col-span-4">
+            <legend className="text-sm font-semibold text-slate-700">
+              Business Admin workspace access
+            </legend>
+            <div className="mt-2 grid gap-2 md:grid-cols-3">
+              {workspaces.map((workspace) => (
+                <label
+                  key={workspace.id}
+                  className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white p-3 text-sm font-medium text-slate-700"
+                >
+                  <input
+                    type="checkbox"
+                    name="workspaceId"
+                    value={workspace.id}
+                    className="size-4"
+                  />
+                  {workspace.name}
+                </label>
+              ))}
+            </div>
+          </fieldset>
         </form>
       </section>
 
@@ -191,6 +246,9 @@ export default async function AdminUsersPage() {
         <div className="divide-y divide-slate-200">
           {adminUsers.map((adminUser) => {
             const isCurrentUser = adminUser.email === currentAdmin.email;
+            const assignedWorkspaceIds = new Set(
+              adminUser.workspaceAccess.map((access) => access.workspaceId),
+            );
 
             return (
               <article
@@ -269,6 +327,30 @@ export default async function AdminUsersPage() {
                       Remove
                     </button>
                   </div>
+                  {adminUser.role === "business_admin" ? (
+                    <fieldset className="lg:col-span-5">
+                      <legend className="text-sm font-semibold text-slate-700">
+                        Workspace access
+                      </legend>
+                      <div className="mt-2 grid gap-2 md:grid-cols-3">
+                        {workspaces.map((workspace) => (
+                          <label
+                            key={workspace.id}
+                            className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white p-3 text-sm font-medium text-slate-700"
+                          >
+                            <input
+                              type="checkbox"
+                              name="workspaceId"
+                              value={workspace.id}
+                              defaultChecked={assignedWorkspaceIds.has(workspace.id)}
+                              className="size-4"
+                            />
+                            {workspace.name}
+                          </label>
+                        ))}
+                      </div>
+                    </fieldset>
+                  ) : null}
                 </form>
               </article>
             );

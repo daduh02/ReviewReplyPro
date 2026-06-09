@@ -1,10 +1,16 @@
 import { Copy } from "lucide-react";
+import { requireAdmin } from "@/lib/admin-auth";
+import { workspaceScopeForAdmin } from "@/lib/app-data";
 import { getDb } from "@/lib/db";
 import { CopyReplyButton } from "@/components/copy-reply-button";
 
 export default async function SavedRepliesPage() {
+  const admin = await requireAdmin();
   const replies = await getDb().savedReply.findMany({
-    where: { archived: false },
+    where: {
+      archived: false,
+      workspace: workspaceScopeForAdmin(admin),
+    },
     include: {
       review: {
         include: {

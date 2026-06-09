@@ -15,8 +15,22 @@ model AdminUser {
   status      String    @default("active")
   createdAt   DateTime  @default(now()) @map("created_at")
   lastLoginAt DateTime? @map("last_login_at")
+  workspaceAccess AdminWorkspaceAccess[]
+  activityEvents  ActivityEvent[]
 
   @@map("admin_users")
+}
+
+model AdminWorkspaceAccess {
+  id          String    @id @default(cuid())
+  adminUserId String    @map("admin_user_id")
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  workspaceId String    @map("workspace_id")
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@unique([adminUserId, workspaceId])
+  @@map("admin_workspace_access")
 }
 
 model User {
@@ -38,12 +52,16 @@ model Workspace {
   billingInterval    String                    @default("monthly") @map("billing_interval")
   monthlyPricePence  Int                       @default(0) @map("monthly_price_pence")
   active             Boolean                   @default(true)
+  setupCompletedAt   DateTime?                 @map("setup_completed_at")
+  replyNotificationEmail String?                @map("reply_notification_email")
   locations          Location[]
   brandVoiceSettings BrandVoiceSetting[]
   integrations       Integration[]
   googleConnection   GoogleBusinessConnection?
   subscription       Subscription?
   usageEvents        UsageEvent[]
+  activityEvents     ActivityEvent[]
+  adminAccess        AdminWorkspaceAccess[]
   savedReplies       SavedReply[]
   createdAt          DateTime                  @default(now())
 }
@@ -62,8 +80,14 @@ model Location {
   googleReviewCount    Int?
   priceRange           String?
   googleBusinessStatus String    @default("Google Business Profile integration coming soon")
+  googlePlaceId        String?   @map("google_place_id")
+  googleAccountId      String?   @map("google_account_id")
+  googleLocationId     String?   @map("google_location_id")
+  gbpSyncEnabled       Boolean   @default(false) @map("gbp_sync_enabled")
+  lastGbpImportAttemptAt DateTime? @map("last_gbp_import_attempt_at")
   reviews              Review[]
   brandVoiceSetting    BrandVoiceSetting?
+  activityEvents       ActivityEvent[]
 }
 
 model BrandVoiceSetting {
@@ -108,6 +132,7 @@ model Review {
   actionedByEmail  String?          @map("actioned_by_email")
   generatedReplies GeneratedReply[]
   savedReplies     SavedReply[]
+  activityEvents    ActivityEvent[]
 }
 
 model GeneratedReply {
@@ -176,4 +201,22 @@ model UsageEvent {
   eventType   String
   quantity    Int       @default(1)
   createdAt   DateTime  @default(now())
+}
+
+model ActivityEvent {
+  id          String     @id @default(cuid())
+  workspaceId String     @map("workspace_id")
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  locationId  String?    @map("location_id")
+  location    Location?  @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  reviewId    String?    @map("review_id")
+  review      Review?    @relation(fields: [reviewId], references: [id], onDelete: SetNull)
+  adminUserId String?    @map("admin_user_id")
+  adminUser   AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+  eventType   String     @map("event_type")
+  summary     String
+  metadata    Json?
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  @@map("activity_events")
 }

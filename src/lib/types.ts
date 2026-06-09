@@ -117,6 +117,10 @@ export type GoogleBusinessLocation = {
   googleRating?: number;
   googleReviewCount?: number;
   priceRange?: string;
+  googlePlaceId?: string;
+  googleAccountId?: string;
+  googleLocationId?: string;
+  gbpSyncEnabled?: boolean;
   status:
     | "Demo Google-style reviews"
     | "Google Business Profile connection coming next"

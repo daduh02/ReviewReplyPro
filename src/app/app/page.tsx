@@ -1,17 +1,20 @@
 import Link from "next/link";
+import { requireAdmin } from "@/lib/admin-auth";
 import { getDashboardStats } from "@/lib/app-data";
 import { ReviewStars } from "@/components/review-stars";
 
 export default async function AppHomePage() {
-  const stats = await getDashboardStats();
+  const admin = await requireAdmin();
+  const stats = await getDashboardStats(admin);
 
   return (
     <div className="space-y-6">
-      <section className="grid gap-4 md:grid-cols-4">
+      <section className="grid gap-4 md:grid-cols-5">
         <Metric label="Total reviews" value={stats.totalReviews} />
         <Metric label="Awaiting response" value={stats.awaitingResponse} />
         <Metric label="Responded to" value={stats.respondedTo} />
         <Metric label="Average rating" value={stats.averageRating.toFixed(1)} />
+        <Metric label="Response rate" value={`${stats.responseRate.toFixed(0)}%`} />
       </section>
 
       <section className="grid gap-6 xl:grid-cols-2">

@@ -80,6 +80,7 @@ export async function ensurePilotCustomerAccounts() {
         billingInterval: account.plan === "Free for Life" ? "free_for_life" : "monthly",
         monthlyPricePence: 0,
         active: account.active,
+        setupCompletedAt: new Date(),
       },
       create: {
         id: account.id,
@@ -91,6 +92,7 @@ export async function ensurePilotCustomerAccounts() {
         billingInterval: account.plan === "Free for Life" ? "free_for_life" : "monthly",
         monthlyPricePence: 0,
         active: account.active,
+        setupCompletedAt: new Date(),
       },
     });
 
@@ -109,6 +111,10 @@ export async function ensurePilotCustomerAccounts() {
           googleReviewCount: location.googleReviewCount,
           priceRange: location.priceRange,
           googleBusinessStatus: location.status,
+          googlePlaceId: location.googlePlaceId,
+          googleAccountId: location.googleAccountId,
+          googleLocationId: location.googleLocationId,
+          gbpSyncEnabled: location.gbpSyncEnabled ?? false,
         },
         create: {
           id: location.id,
@@ -123,6 +129,10 @@ export async function ensurePilotCustomerAccounts() {
           googleReviewCount: location.googleReviewCount,
           priceRange: location.priceRange,
           googleBusinessStatus: location.status,
+          googlePlaceId: location.googlePlaceId,
+          googleAccountId: location.googleAccountId,
+          googleLocationId: location.googleLocationId,
+          gbpSyncEnabled: location.gbpSyncEnabled ?? false,
         },
       });
 

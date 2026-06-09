@@ -3,6 +3,7 @@ import {
   FileText,
   Inbox,
   Link2,
+  MapPinned,
   MessageSquarePlus,
   Settings,
   SlidersHorizontal,
@@ -12,6 +13,8 @@ import Link from "next/link";
 import type { getCurrentAdmin } from "@/lib/admin-auth";
 
 const appLinks = [
+  { href: "/app", label: "Dashboard", mobileLabel: "Home", icon: Sparkles },
+  { href: "/app/setup", label: "Business Setup", mobileLabel: "Setup", icon: MapPinned },
   { href: "/app/reviews", label: "Review Inbox", mobileLabel: "Inbox", icon: Inbox },
   {
     href: "/app/generate",

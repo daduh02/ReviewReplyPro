@@ -1,8 +1,10 @@
+import { requireAdmin } from "@/lib/admin-auth";
 import { getActiveLocations, toBrandVoiceInput } from "@/lib/app-data";
 import { updateBrandVoiceAction } from "@/lib/review-actions";
 
 export default async function BrandVoicePage() {
-  const locations = await getActiveLocations();
+  const admin = await requireAdmin();
+  const locations = await getActiveLocations(admin);
 
   return (
     <div className="space-y-6">

@@ -5,7 +5,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { notFound } from "next/navigation";
-import { getReviewForApp, toBrandVoiceInput } from "@/lib/app-data";
+import { requireAdmin } from "@/lib/admin-auth";
+import { getActivityEvents, getReviewForApp, toBrandVoiceInput } from "@/lib/app-data";
 import {
   archiveReviewAction,
   editReplyAction,
@@ -24,7 +25,11 @@ export default async function ReviewDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const review = await getReviewForApp(id);
+  const admin = await requireAdmin();
+  const [review, activityEvents] = await Promise.all([
+    getReviewForApp(id, admin),
+    getActivityEvents(admin, id),
+  ]);
 
   if (!review) {
     notFound();
@@ -200,6 +205,24 @@ export default async function ReviewDetailPage({
               Archive
             </button>
           </form>
+        </div>
+
+        <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
+          <h3 className="font-semibold text-slate-950">Activity</h3>
+          <div className="mt-3 space-y-3">
+            {activityEvents.map((event) => (
+              <div key={event.id} className="text-sm leading-6 text-slate-600">
+                <p className="font-medium text-slate-800">{event.summary}</p>
+                <p className="text-xs text-slate-500">
+                  {event.createdAt.toLocaleString("en-GB")}
+                  {event.adminUser?.email ? ` · ${event.adminUser.email}` : ""}
+                </p>
+              </div>
+            ))}
+            {!activityEvents.length ? (
+              <p className="text-sm text-slate-600">No activity recorded yet.</p>
+            ) : null}
+          </div>
         </div>
       </section>
     </div>

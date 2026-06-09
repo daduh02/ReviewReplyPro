@@ -225,6 +225,10 @@ async function addLocation(formData: FormData) {
       googleBusinessStatus:
         value(formData, "googleBusinessStatus") ||
         "Google Business Profile integration coming soon",
+      googlePlaceId: optionalValue(formData, "googlePlaceId"),
+      googleAccountId: optionalValue(formData, "googleAccountId"),
+      googleLocationId: optionalValue(formData, "googleLocationId"),
+      gbpSyncEnabled: value(formData, "gbpSyncEnabled") === "true",
     },
   });
 
@@ -260,6 +264,10 @@ async function updateLocation(formData: FormData) {
       googleBusinessStatus:
         value(formData, "googleBusinessStatus") ||
         "Google Business Profile integration coming soon",
+      googlePlaceId: optionalValue(formData, "googlePlaceId"),
+      googleAccountId: optionalValue(formData, "googleAccountId"),
+      googleLocationId: optionalValue(formData, "googleLocationId"),
+      gbpSyncEnabled: value(formData, "gbpSyncEnabled") === "true",
     },
   });
 
@@ -534,6 +542,30 @@ export default async function AdminAccountsPage() {
                       label="GBP status"
                       defaultValue={location.googleBusinessStatus}
                     />
+                    <TextInput
+                      name="googlePlaceId"
+                      label="Google Place ID"
+                      defaultValue={location.googlePlaceId ?? ""}
+                    />
+                    <TextInput
+                      name="googleAccountId"
+                      label="Google account ID"
+                      defaultValue={location.googleAccountId ?? ""}
+                    />
+                    <TextInput
+                      name="googleLocationId"
+                      label="Google location ID"
+                      defaultValue={location.googleLocationId ?? ""}
+                    />
+                    <SelectInput
+                      name="gbpSyncEnabled"
+                      label="GBP sync enabled"
+                      options={[
+                        { value: "false", label: "No" },
+                        { value: "true", label: "Yes" },
+                      ]}
+                      defaultValue={location.gbpSyncEnabled ? "true" : "false"}
+                    />
                     <div className="flex items-end gap-2 lg:col-span-2">
                       <button className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-blue-200 hover:text-blue-700">
                         Update location
@@ -584,6 +616,18 @@ export default async function AdminAccountsPage() {
                     name="googleBusinessStatus"
                     label="GBP status"
                     defaultValue="Google Business Profile integration coming soon"
+                  />
+                  <TextInput name="googlePlaceId" label="Google Place ID" />
+                  <TextInput name="googleAccountId" label="Google account ID" />
+                  <TextInput name="googleLocationId" label="Google location ID" />
+                  <SelectInput
+                    name="gbpSyncEnabled"
+                    label="GBP sync enabled"
+                    options={[
+                      { value: "false", label: "No" },
+                      { value: "true", label: "Yes" },
+                    ]}
+                    defaultValue="false"
                   />
                   <button className="self-end rounded-lg bg-slate-950 px-4 py-2 text-sm font-semibold text-white lg:col-span-2">
                     Add location

@@ -1,9 +1,11 @@
 import { Save } from "lucide-react";
+import { requireAdmin } from "@/lib/admin-auth";
 import { getActiveLocations } from "@/lib/app-data";
 import { addReviewAction } from "@/lib/review-actions";
 
 export default async function GeneratePage() {
-  const locations = await getActiveLocations();
+  const admin = await requireAdmin();
+  const locations = await getActiveLocations(admin);
 
   return (
     <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">

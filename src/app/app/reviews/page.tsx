@@ -1,5 +1,6 @@
 import { Archive, CheckCircle2, ExternalLink, Search, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { requireAdmin } from "@/lib/admin-auth";
 import {
   getActiveLocations,
   getReviewsForApp,
@@ -25,6 +26,7 @@ export default async function ReviewInboxPage({
 }: {
   searchParams: SearchParams;
 }) {
+  const admin = await requireAdmin();
   const params = await searchParams;
   const location = paramValue(params, "location") ?? "all";
   const status = paramValue(params, "status") ?? "all";
@@ -32,8 +34,8 @@ export default async function ReviewInboxPage({
   const sort = (paramValue(params, "sort") ?? "newest") as "newest" | "oldest";
   const query = paramValue(params, "q") ?? "";
   const [locations, reviews] = await Promise.all([
-    getActiveLocations(),
-    getReviewsForApp({ locationId: location, status, rating, sort, query }),
+    getActiveLocations(admin),
+    getReviewsForApp({ admin, locationId: location, status, rating, sort, query }),
   ]);
   const awaiting = reviews.filter((review) =>
     ["new", "draft_ready", "edited", "copied"].includes(review.status),

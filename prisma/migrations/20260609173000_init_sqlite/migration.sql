@@ -10,6 +10,16 @@ CREATE TABLE "admin_users" (
 );
 
 -- CreateTable
+CREATE TABLE "admin_workspace_access" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "admin_user_id" TEXT NOT NULL,
+    "workspace_id" TEXT NOT NULL,
+    "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "admin_workspace_access_admin_user_id_fkey" FOREIGN KEY ("admin_user_id") REFERENCES "admin_users" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "admin_workspace_access_workspace_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "Workspace" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "email" TEXT NOT NULL,
@@ -28,6 +38,8 @@ CREATE TABLE "Workspace" (
     "billing_interval" TEXT NOT NULL DEFAULT 'monthly',
     "monthly_price_pence" INTEGER NOT NULL DEFAULT 0,
     "active" BOOLEAN NOT NULL DEFAULT true,
+    "setup_completed_at" DATETIME,
+    "reply_notification_email" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Workspace_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
@@ -46,6 +58,11 @@ CREATE TABLE "Location" (
     "googleReviewCount" INTEGER,
     "priceRange" TEXT,
     "googleBusinessStatus" TEXT NOT NULL DEFAULT 'Google Business Profile integration coming soon',
+    "google_place_id" TEXT,
+    "google_account_id" TEXT,
+    "google_location_id" TEXT,
+    "gbp_sync_enabled" BOOLEAN NOT NULL DEFAULT false,
+    "last_gbp_import_attempt_at" DATETIME,
     CONSTRAINT "Location_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -165,11 +182,31 @@ CREATE TABLE "UsageEvent" (
     CONSTRAINT "UsageEvent_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+-- CreateTable
+CREATE TABLE "activity_events" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "workspace_id" TEXT NOT NULL,
+    "location_id" TEXT,
+    "review_id" TEXT,
+    "admin_user_id" TEXT,
+    "event_type" TEXT NOT NULL,
+    "summary" TEXT NOT NULL,
+    "metadata" JSONB,
+    "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "activity_events_workspace_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "Workspace" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "activity_events_location_id_fkey" FOREIGN KEY ("location_id") REFERENCES "Location" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "activity_events_review_id_fkey" FOREIGN KEY ("review_id") REFERENCES "Review" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "activity_events_admin_user_id_fkey" FOREIGN KEY ("admin_user_id") REFERENCES "admin_users" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "admin_users_email_key" ON "admin_users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "admin_workspace_access_admin_user_id_workspace_id_key" ON "admin_workspace_access"("admin_user_id", "workspace_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "BrandVoiceSetting_location_id_key" ON "BrandVoiceSetting"("location_id");
