@@ -42,7 +42,13 @@ export function getAIReplyProvider(): AIReplyProvider {
 }
 
 export function buildMockReplies(input: ReplyGenerationInput) {
-  const brand = input.brandVoiceSettings ?? defaultBrandVoice;
+  const brand = input.brandVoiceSettings ?? {
+    ...defaultBrandVoice,
+    businessName: input.businessName,
+    businessType: input.businessType as BrandVoiceSettings["businessType"],
+    location: input.location,
+    signOffStyle: `Thanks, the ${input.businessName} team`,
+  };
   const firstName = input.customerName?.split(" ")[0] ?? "there";
   const isComplaint = input.starRating <= 3;
   const isLegal =
@@ -71,10 +77,11 @@ export function buildMockReplies(input: ReplyGenerationInput) {
   }
 
   if (isComplaint) {
+    const contactTarget = isRestaurant ? "restaurant" : "business";
     return [
-      `Hi ${firstName}, thank you for letting us know. We are sorry your experience with ${input.businessName} did not meet expectations. Please contact the restaurant directly with your order details so the team can look into this for you. ${signOff}.`,
+      `Hi ${firstName}, thank you for letting us know. We are sorry your experience with ${input.businessName} did not meet expectations. Please contact the ${contactTarget} directly with the details so the team can look into this for you. ${signOff}.`,
       `Hello ${firstName}, we are sorry to hear about this experience. A delay or issue with an order can be frustrating, and we would like to review what happened. Please get in touch with ${input.businessName} directly so the team can help.`,
-      `Hi ${firstName}, thank you for your feedback. We apologise that your order experience was not as expected. Please contact the restaurant directly and we will look into it carefully.`,
+      `Hi ${firstName}, thank you for your feedback. We apologise that your experience was not as expected. Please contact the ${contactTarget} directly and we will look into it carefully.`,
     ];
   }
 
