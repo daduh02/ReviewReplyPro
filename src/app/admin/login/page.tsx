@@ -44,12 +44,12 @@ export default async function AdminLoginPage({ searchParams }: LoginPageProps) {
             </div>
           ) : null}
           <div className="mt-5 space-y-3">
-            <Link
+            <a
               href="/api/auth/google/start"
               className="block rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-blue-700"
             >
               Continue with Google
-            </Link>
+            </a>
             <Link
               href="/"
               className="block rounded-lg border border-slate-200 px-4 py-2.5 text-center text-sm font-semibold text-slate-700 hover:border-blue-200 hover:text-blue-700"
