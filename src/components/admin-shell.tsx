@@ -6,6 +6,7 @@ import {
   Link2,
   LogOut,
   MapPinned,
+  Menu,
   ShieldCheck,
   SlidersHorizontal,
   UserRoundCheck,
@@ -38,6 +39,10 @@ type AdminShellProps = {
 };
 
 export function AdminShell({ admin, children }: AdminShellProps) {
+  const visibleLinks = adminLinks.filter(
+    (link) => !link.superAdminOnly || admin.role === "super_admin",
+  );
+
   return (
     <div className="min-h-screen bg-slate-100">
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-72 border-r border-slate-200 bg-white p-5 lg:block">
@@ -59,8 +64,7 @@ export function AdminShell({ admin, children }: AdminShellProps) {
           </p>
         </div>
         <nav className="mt-6 space-y-1">
-          {adminLinks
-            .filter((link) => !link.superAdminOnly || admin.role === "super_admin")
+          {visibleLinks
             .map((link) => {
               const Icon = link.icon;
               return (
@@ -76,20 +80,20 @@ export function AdminShell({ admin, children }: AdminShellProps) {
             })}
         </nav>
       </aside>
-      <div className="lg:pl-72">
+      <div className="min-w-0 lg:pl-72">
         <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 px-4 py-4 backdrop-blur sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
+            <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">
                 Admin workspace
               </p>
-              <h1 className="text-lg font-semibold text-slate-950">
+              <h1 className="text-balance text-lg font-semibold text-slate-950">
                 Pilot businesses, reviews, replies and billing controls
               </h1>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex min-w-0 items-center gap-3">
               <div className="hidden text-right sm:block">
-                <p className="text-sm font-semibold text-slate-950">
+                <p className="max-w-56 truncate text-sm font-semibold text-slate-950">
                   {admin.name || admin.email}
                 </p>
                 <p className="text-xs capitalize text-slate-500">
@@ -104,30 +108,37 @@ export function AdminShell({ admin, children }: AdminShellProps) {
               </form>
             </div>
           </div>
-        </header>
-        <nav
-          aria-label="Mobile admin navigation"
-          className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/95 px-3 py-2 shadow-[0_-10px_30px_rgba(15,23,42,0.08)] backdrop-blur lg:hidden"
-        >
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {adminLinks
-              .filter((link) => !link.superAdminOnly || admin.role === "super_admin")
-              .map((link) => {
+          <details className="mt-4 lg:hidden">
+            <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm [&::-webkit-details-marker]:hidden">
+              <span className="inline-flex items-center gap-2">
+                <Menu className="size-4" />
+                Admin menu
+              </span>
+              <span className="text-xs text-slate-500">
+                {visibleLinks.length} sections
+              </span>
+            </summary>
+            <nav
+              aria-label="Mobile admin navigation"
+              className="mt-3 grid gap-2 rounded-lg border border-slate-200 bg-white p-2 shadow-sm sm:grid-cols-2"
+            >
+              {visibleLinks.map((link) => {
                 const Icon = link.icon;
                 return (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="flex min-w-20 flex-col items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-2 text-center text-[11px] font-semibold leading-tight text-slate-700 shadow-sm hover:border-blue-200 hover:text-blue-700"
+                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 hover:text-blue-700"
                   >
-                    <Icon className="size-4" />
-                    <span>{link.label.replace("Admin ", "")}</span>
+                    <Icon className="size-4 shrink-0" />
+                    <span className="truncate">{link.label}</span>
                   </Link>
                 );
               })}
-          </div>
-        </nav>
-        <main className="px-4 pb-28 pt-6 sm:px-6 lg:px-8 lg:pb-6">
+            </nav>
+          </details>
+        </header>
+        <main className="min-w-0 px-4 pb-8 pt-6 sm:px-6 lg:px-8">
           {children}
         </main>
       </div>

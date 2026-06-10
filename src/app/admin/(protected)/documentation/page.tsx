@@ -23,9 +23,9 @@ export default async function AdminDocumentationPage({
   return (
     <div className="space-y-6">
       <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
-        <div className="flex items-center gap-3">
-          <BookOpen className="size-5 text-blue-700" />
-          <div>
+        <div className="flex items-start gap-3">
+          <BookOpen className="mt-1 size-5 shrink-0 text-blue-700" />
+          <div className="min-w-0">
             <h2 className="text-2xl font-semibold text-slate-950">
               Documentation
             </h2>
@@ -37,7 +37,7 @@ export default async function AdminDocumentationPage({
         </div>
       </section>
 
-      <div className="grid gap-6 xl:grid-cols-[280px_1fr]">
+      <div className="grid min-w-0 gap-6 xl:grid-cols-[280px_1fr]">
         <aside className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200 xl:sticky xl:top-24 xl:self-start">
           <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
             Documentation files
@@ -59,7 +59,7 @@ export default async function AdminDocumentationPage({
           </nav>
         </aside>
 
-        <article className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6">
+        <article className="min-w-0 rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6">
           <MarkdownView markdown={markdown} />
         </article>
       </div>
@@ -71,11 +71,11 @@ function MarkdownView({ markdown }: { markdown: string }) {
   const blocks = toBlocks(markdown);
 
   return (
-    <div className="space-y-4 text-slate-700">
+    <div className="min-w-0 space-y-4 break-words text-slate-700">
       {blocks.map((block, index) => {
         if (block.type === "h1") {
           return (
-            <h1 key={index} className="text-3xl font-semibold text-slate-950">
+            <h1 key={index} className="text-balance text-2xl font-semibold text-slate-950 sm:text-3xl">
               {block.text}
             </h1>
           );
@@ -83,7 +83,7 @@ function MarkdownView({ markdown }: { markdown: string }) {
 
         if (block.type === "h2") {
           return (
-            <h2 key={index} className="pt-4 text-2xl font-semibold text-slate-950">
+            <h2 key={index} className="text-balance pt-4 text-xl font-semibold text-slate-950 sm:text-2xl">
               {block.text}
             </h2>
           );
@@ -91,7 +91,7 @@ function MarkdownView({ markdown }: { markdown: string }) {
 
         if (block.type === "h3") {
           return (
-            <h3 key={index} className="pt-3 text-xl font-semibold text-slate-950">
+            <h3 key={index} className="text-balance pt-3 text-lg font-semibold text-slate-950 sm:text-xl">
               {block.text}
             </h3>
           );

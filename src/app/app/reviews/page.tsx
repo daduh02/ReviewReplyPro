@@ -149,7 +149,7 @@ export default async function ReviewInboxPage({
         </form>
 
         <div className="mt-5 overflow-hidden rounded-lg border border-slate-200">
-          <div className="hidden grid-cols-[1fr_0.8fr_0.65fr_0.7fr_1.15fr_0.8fr] gap-4 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:grid">
+          <div className="hidden grid-cols-[1fr_0.8fr_0.65fr_0.7fr_1.15fr_0.8fr] gap-4 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 xl:grid">
             <span>Customer</span>
             <span>Business</span>
             <span>Received</span>
@@ -167,9 +167,9 @@ export default async function ReviewInboxPage({
               return (
                 <article
                   key={review.id}
-                  className="grid gap-4 p-4 lg:grid-cols-[1fr_0.8fr_0.65fr_0.7fr_1.15fr_0.8fr] lg:items-center"
+                  className="grid gap-4 p-4 xl:grid-cols-[1fr_0.8fr_0.65fr_0.7fr_1.15fr_0.8fr] xl:items-center"
                 >
-                  <div>
+                  <div className="min-w-0">
                     <div className="flex items-center justify-between gap-3">
                       <p className="font-semibold text-slate-950">
                         {review.customerName ?? "Google reviewer"}
@@ -183,7 +183,7 @@ export default async function ReviewInboxPage({
                       Source: {review.source}
                     </p>
                   </div>
-                  <p className="text-sm font-medium text-slate-700">
+                  <p className="min-w-0 break-words text-sm font-medium text-slate-700">
                     <span className="block">{review.location.businessName}</span>
                     <span className="block text-xs text-slate-500">
                       {review.location.city}

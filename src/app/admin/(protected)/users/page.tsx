@@ -156,9 +156,9 @@ export default async function AdminUsersPage() {
   return (
     <div className="space-y-6">
       <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
-        <div className="flex items-center gap-3">
-          <Users className="size-5 text-blue-700" />
-          <div>
+        <div className="flex items-start gap-3">
+          <Users className="mt-1 size-5 shrink-0 text-blue-700" />
+          <div className="min-w-0">
             <h2 className="text-2xl font-semibold text-slate-950">
               Admin Users
             </h2>
@@ -171,7 +171,7 @@ export default async function AdminUsersPage() {
 
         <form
           action={addAdminUser}
-          className="mt-6 grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[1fr_1fr_220px_auto]"
+          className="mt-6 grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_220px_auto]"
         >
           <label className="text-sm font-semibold text-slate-700">
             Email
@@ -205,13 +205,13 @@ export default async function AdminUsersPage() {
               ))}
             </select>
           </label>
-          <button className="self-end rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+          <button className="self-end rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 sm:w-fit">
             <span className="inline-flex items-center gap-2">
               <UserPlus className="size-4" />
               Add user
             </span>
           </button>
-          <fieldset className="lg:col-span-4">
+          <fieldset className="sm:col-span-2 lg:col-span-4">
             <legend className="text-sm font-semibold text-slate-700">
               Business Admin workspace access
             </legend>
@@ -227,7 +227,7 @@ export default async function AdminUsersPage() {
                     value={workspace.id}
                     className="size-4"
                   />
-                  {workspace.name}
+                  <span className="min-w-0 break-words">{workspace.name}</span>
                 </label>
               ))}
             </div>
@@ -236,7 +236,7 @@ export default async function AdminUsersPage() {
       </section>
 
       <section className="overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-slate-200">
-        <div className="hidden grid-cols-[1.1fr_0.8fr_0.7fr_0.8fr_0.8fr] gap-4 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:grid">
+        <div className="hidden grid-cols-[1.1fr_0.8fr_0.7fr_0.8fr_0.8fr] gap-4 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 xl:grid">
           <span>User</span>
           <span>Role</span>
           <span>Status</span>
@@ -253,11 +253,11 @@ export default async function AdminUsersPage() {
             return (
               <article
                 key={adminUser.id}
-                className="grid gap-4 p-4 lg:grid-cols-[1.1fr_0.8fr_0.7fr_0.8fr_0.8fr] lg:items-center"
+                className="grid gap-4 p-4 xl:grid-cols-[1.1fr_0.8fr_0.7fr_0.8fr_0.8fr] xl:items-center"
               >
-                <div>
+                <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-semibold text-slate-950">
+                    <p className="break-words font-semibold text-slate-950">
                       {adminUser.name || adminUser.email}
                     </p>
                     {isCurrentUser ? (
@@ -272,7 +272,7 @@ export default async function AdminUsersPage() {
                       </span>
                     ) : null}
                   </div>
-                  <p className="mt-1 text-sm text-slate-600">
+                  <p className="mt-1 break-all text-sm text-slate-600">
                     {adminUser.email}
                   </p>
                   <p className="mt-1 text-xs text-slate-500">
@@ -283,11 +283,11 @@ export default async function AdminUsersPage() {
                 <form action={updateAdminUser} className="contents">
                   <input type="hidden" name="id" value={adminUser.id} />
                   <label className="text-sm font-semibold text-slate-700 lg:text-slate-600">
-                    <span className="lg:hidden">Role</span>
+                    <span className="xl:hidden">Role</span>
                     <select
                       name="role"
                       defaultValue={adminUser.role}
-                      className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm lg:mt-0"
+                      className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm xl:mt-0"
                     >
                       {roleOptions.map((role) => (
                         <option key={role.value} value={role.value}>
@@ -297,11 +297,11 @@ export default async function AdminUsersPage() {
                     </select>
                   </label>
                   <label className="text-sm font-semibold text-slate-700 lg:text-slate-600">
-                    <span className="lg:hidden">Status</span>
+                    <span className="xl:hidden">Status</span>
                     <select
                       name="status"
                       defaultValue={adminUser.status}
-                      className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm lg:mt-0"
+                      className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm xl:mt-0"
                     >
                       {statusOptions.map((status) => (
                         <option key={status.value} value={status.value}>
@@ -328,7 +328,7 @@ export default async function AdminUsersPage() {
                     </button>
                   </div>
                   {adminUser.role === "business_admin" ? (
-                    <fieldset className="lg:col-span-5">
+                    <fieldset className="xl:col-span-5">
                       <legend className="text-sm font-semibold text-slate-700">
                         Workspace access
                       </legend>
@@ -345,7 +345,7 @@ export default async function AdminUsersPage() {
                               defaultChecked={assignedWorkspaceIds.has(workspace.id)}
                               className="size-4"
                             />
-                            {workspace.name}
+                            <span className="min-w-0 break-words">{workspace.name}</span>
                           </label>
                         ))}
                       </div>

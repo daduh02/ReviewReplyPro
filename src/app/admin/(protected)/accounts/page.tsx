@@ -324,9 +324,9 @@ export default async function AdminAccountsPage() {
   return (
     <div className="space-y-6">
       <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
-        <div className="flex items-center gap-3">
-          <Building2 className="size-5 text-blue-700" />
-          <div>
+        <div className="flex items-start gap-3">
+          <Building2 className="mt-1 size-5 shrink-0 text-blue-700" />
+          <div className="min-w-0">
             <h2 className="text-2xl font-semibold text-slate-950">Accounts</h2>
             <p className="mt-1 text-sm leading-6 text-slate-600">
               Add and update Demo, Pilot and Paid Customer accounts. Only Demo
@@ -337,7 +337,7 @@ export default async function AdminAccountsPage() {
 
         <form
           action={addAccount}
-          className="mt-6 grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 lg:grid-cols-4"
+          className="mt-6 grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 sm:grid-cols-2 xl:grid-cols-4"
         >
           <TextInput name="name" label="Account name" required />
           <SelectInput
@@ -378,7 +378,7 @@ export default async function AdminAccountsPage() {
             options={activeOptions}
             defaultValue="true"
           />
-          <button className="self-end rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+          <button className="self-end rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 sm:w-fit">
             <span className="inline-flex items-center gap-2">
               <Plus className="size-4" />
               Add account
@@ -394,12 +394,12 @@ export default async function AdminAccountsPage() {
           return (
             <article
               key={account.id}
-              className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200"
+              className="min-w-0 rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200 sm:p-5"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
+                <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="text-xl font-semibold text-slate-950">
+                    <h3 className="break-words text-xl font-semibold text-slate-950">
                       {account.name}
                     </h3>
                     <AccountBadge accountType={account.accountType} />
@@ -428,7 +428,7 @@ export default async function AdminAccountsPage() {
 
               <form
                 action={updateAccount}
-                className="mt-5 grid gap-3 rounded-lg border border-slate-200 p-4 lg:grid-cols-4"
+                className="mt-5 grid gap-3 rounded-lg border border-slate-200 p-4 sm:grid-cols-2 xl:grid-cols-4"
               >
                 <input type="hidden" name="id" value={account.id} />
                 <TextInput name="name" label="Account name" defaultValue={account.name} required />
@@ -484,7 +484,7 @@ export default async function AdminAccountsPage() {
                   <form
                     key={location.id}
                     action={updateLocation}
-                    className="grid gap-3 rounded-lg border border-slate-200 p-4 lg:grid-cols-4"
+                    className="grid gap-3 rounded-lg border border-slate-200 p-4 sm:grid-cols-2 xl:grid-cols-4"
                   >
                     <input type="hidden" name="id" value={location.id} />
                     <TextInput
@@ -566,7 +566,7 @@ export default async function AdminAccountsPage() {
                       ]}
                       defaultValue={location.gbpSyncEnabled ? "true" : "false"}
                     />
-                    <div className="flex items-end gap-2 lg:col-span-2">
+                    <div className="flex flex-wrap items-end gap-2 sm:col-span-2">
                       <button className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-blue-200 hover:text-blue-700">
                         Update location
                       </button>
@@ -583,7 +583,7 @@ export default async function AdminAccountsPage() {
 
                 <form
                   action={addLocation}
-                  className="grid gap-3 rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4 lg:grid-cols-4"
+                  className="grid gap-3 rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4 sm:grid-cols-2 xl:grid-cols-4"
                 >
                   <input type="hidden" name="workspaceId" value={account.id} />
                   <TextInput
@@ -629,7 +629,7 @@ export default async function AdminAccountsPage() {
                     ]}
                     defaultValue="false"
                   />
-                  <button className="self-end rounded-lg bg-slate-950 px-4 py-2 text-sm font-semibold text-white lg:col-span-2">
+                  <button className="self-end rounded-lg bg-slate-950 px-4 py-2 text-sm font-semibold text-white sm:col-span-2 sm:w-fit">
                     Add location
                   </button>
                 </form>
@@ -662,7 +662,7 @@ function TextInput({
   max?: string;
 }) {
   return (
-    <label className="text-sm font-semibold text-slate-700">
+    <label className="min-w-0 text-sm font-semibold text-slate-700">
       {label}
       <input
         name={name}
@@ -672,7 +672,7 @@ function TextInput({
         max={max}
         required={required}
         defaultValue={defaultValue}
-        className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+        className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
       />
     </label>
   );
@@ -690,12 +690,12 @@ function SelectInput({
   defaultValue?: string;
 }) {
   return (
-    <label className="text-sm font-semibold text-slate-700">
+    <label className="min-w-0 text-sm font-semibold text-slate-700">
       {label}
       <select
         name={name}
         defaultValue={defaultValue}
-        className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+        className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>

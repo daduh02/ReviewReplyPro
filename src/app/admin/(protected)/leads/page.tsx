@@ -57,9 +57,9 @@ export default async function AdminLeadsPage({
       </section>
 
       <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
-        <div className="flex items-center gap-3">
-          <UserRoundCheck className="size-5 text-blue-700" />
-          <div>
+        <div className="flex items-start gap-3">
+          <UserRoundCheck className="mt-1 size-5 shrink-0 text-blue-700" />
+          <div className="min-w-0">
             <h2 className="text-2xl font-semibold text-slate-950">Leads</h2>
             <p className="mt-1 text-sm leading-6 text-slate-600">
               Lightweight pilot lead management for UK businesses interested in
@@ -113,7 +113,7 @@ export default async function AdminLeadsPage({
       </section>
 
       <section className="overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-slate-200">
-        <div className="hidden grid-cols-[1fr_0.85fr_1fr_0.8fr_0.75fr_0.8fr] gap-4 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:grid">
+        <div className="hidden grid-cols-[1fr_0.85fr_1fr_0.8fr_0.75fr_0.8fr] gap-4 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 xl:grid">
           <span>Business Name</span>
           <span>Contact Name</span>
           <span>Email</span>
@@ -125,23 +125,23 @@ export default async function AdminLeadsPage({
           {leads.map((lead) => (
             <article
               key={lead.id}
-              className="grid gap-4 p-4 lg:grid-cols-[1fr_0.85fr_1fr_0.8fr_0.75fr_0.8fr] lg:items-start"
+              className="grid gap-4 p-4 xl:grid-cols-[1fr_0.85fr_1fr_0.8fr_0.75fr_0.8fr] xl:items-start"
             >
-              <div>
-                <p className="font-semibold text-slate-950">{lead.businessName}</p>
+              <div className="min-w-0">
+                <p className="break-words font-semibold text-slate-950">{lead.businessName}</p>
                 <p className="mt-1 text-xs text-slate-500">
                   {lead.numberOfLocations} location
                   {lead.numberOfLocations === 1 ? "" : "s"} · {lead.currentReviewPlatform}
                 </p>
               </div>
-              <p className="text-sm text-slate-700">{lead.name}</p>
-              <div>
-                <p className="text-sm text-slate-700">{lead.email}</p>
+              <p className="break-words text-sm text-slate-700">{lead.name}</p>
+              <div className="min-w-0">
+                <p className="break-all text-sm text-slate-700">{lead.email}</p>
                 {lead.mobileNumber ? (
                   <p className="mt-1 text-xs text-slate-500">{lead.mobileNumber}</p>
                 ) : null}
               </div>
-              <p className="text-sm text-slate-700">{lead.businessType}</p>
+              <p className="break-words text-sm text-slate-700">{lead.businessType}</p>
               <p className="text-sm text-slate-600">
                 {lead.createdAt.toLocaleDateString("en-GB")}
               </p>
@@ -165,7 +165,7 @@ export default async function AdminLeadsPage({
                   {leadStatusLabels[lead.status] ?? lead.status}
                 </p>
               </form>
-              <div className="lg:col-span-6">
+              <div className="xl:col-span-6">
                 <p className="rounded-lg bg-slate-50 p-3 text-sm leading-6 text-slate-600">
                   <span className="font-semibold text-slate-800">Challenge:</span>{" "}
                   {lead.biggestChallenge}
