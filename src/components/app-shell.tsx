@@ -4,7 +4,6 @@ import {
   Inbox,
   Link2,
   MapPinned,
-  Menu,
   MessageSquarePlus,
   Settings,
   SlidersHorizontal,
@@ -65,14 +64,14 @@ export function AppShell({
           {appLinks.map((link) => {
             const Icon = link.icon;
             return (
-              <Link
+              <a
                 key={link.href}
                 href={link.href}
                 className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-blue-700"
               >
                 <Icon className="size-4" />
                 {link.label}
-              </Link>
+              </a>
             );
           })}
         </nav>
@@ -97,33 +96,24 @@ export function AppShell({
               </div>
             </div>
           </div>
-          <details className="mt-4 lg:hidden">
-            <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm [&::-webkit-details-marker]:hidden">
-              <span className="inline-flex items-center gap-2">
-                <Menu className="size-4" />
-                Workspace menu
-              </span>
-              <span className="text-xs text-slate-500">{appLinks.length} sections</span>
-            </summary>
-            <nav
-              aria-label="Mobile app navigation"
-              className="mt-3 grid gap-2 rounded-lg border border-slate-200 bg-white p-2 shadow-sm sm:grid-cols-2"
-            >
-              {appLinks.map((link) => {
-                const Icon = link.icon;
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 hover:text-blue-700"
-                  >
-                    <Icon className="size-4 shrink-0" />
-                    <span className="truncate">{link.label}</span>
-                  </Link>
-                );
-              })}
-            </nav>
-          </details>
+          <nav
+            aria-label="Mobile app navigation"
+            className="mt-4 grid grid-cols-2 gap-2 rounded-lg border border-slate-200 bg-white p-2 shadow-sm sm:grid-cols-3 lg:hidden"
+          >
+            {appLinks.map((link) => {
+              const Icon = link.icon;
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 hover:text-blue-700"
+                >
+                  <Icon className="size-4 shrink-0" />
+                  <span className="truncate">{link.label}</span>
+                </a>
+              );
+            })}
+          </nav>
         </header>
         <main className="min-w-0 px-4 pb-8 pt-6 sm:px-6 lg:px-8">
           {children}
