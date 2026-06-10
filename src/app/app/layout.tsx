@@ -2,6 +2,7 @@ import { AppShell } from "@/components/app-shell";
 import { requireAdmin } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
+export const preferredRegion = "lhr1";
 
 export default function DashboardLayout({
   children,
