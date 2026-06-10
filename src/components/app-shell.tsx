@@ -64,14 +64,14 @@ export function AppShell({
           {appLinks.map((link) => {
             const Icon = link.icon;
             return (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
                 className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-blue-700"
               >
                 <Icon className="size-4" />
                 {link.label}
-              </a>
+              </Link>
             );
           })}
         </nav>
@@ -103,14 +103,14 @@ export function AppShell({
             {appLinks.map((link) => {
               const Icon = link.icon;
               return (
-                <a
+                <Link
                   key={link.href}
                   href={link.href}
                   className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 hover:text-blue-700"
                 >
                   <Icon className="size-4 shrink-0" />
                   <span className="truncate">{link.label}</span>
-                </a>
+                </Link>
               );
             })}
           </nav>

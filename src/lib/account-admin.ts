@@ -52,6 +52,8 @@ export function displayBillingStatus(status: string) {
   return status.replace("_", " ");
 }
 
+let pilotCustomerAccountsPromise: Promise<void> | null = null;
+
 export async function ensureSystemOwner() {
   const db = getDb();
 
@@ -66,6 +68,29 @@ export async function ensureSystemOwner() {
 }
 
 export async function ensurePilotCustomerAccounts() {
+  pilotCustomerAccountsPromise ??= ensurePilotCustomerAccountsOnce().catch((error) => {
+    pilotCustomerAccountsPromise = null;
+    throw error;
+  });
+
+  return pilotCustomerAccountsPromise;
+}
+
+async function ensurePilotCustomerAccountsOnce() {
+  const db = getDb();
+  const expectedIds = customerAccounts.map((account) => account.id);
+  const existingCount = await db.workspace.count({
+    where: { id: { in: expectedIds } },
+  });
+
+  if (existingCount === expectedIds.length) {
+    return;
+  }
+
+  await syncPilotCustomerAccounts();
+}
+
+async function syncPilotCustomerAccounts() {
   const db = getDb();
   const owner = await ensureSystemOwner();
 
